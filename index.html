@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мат. Стат — Карточки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath:[['$','$'],['\\(','\\)']], displayMath:[['$$','$$']] },
+  options: { skipHtmlTags:['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+:root {
+  --bg:      #0b0a07;
+  --bg2:     #151310;
+  --gold:    #c8a44a;
+  --gold-lt: #e6c46a;
+  --gold-dim:rgba(200,164,74,.13);
+  --parch:   #f3edd6;
+  --parch-m: #e4ddc1;
+  --ink:     #1c1808;
+  --ink-lt:  #8b6840;
+  --txt:     #d5cfc0;
+  --txt-dim: rgba(213,207,192,.42);
+  --bdr:     rgba(200,164,74,.22);
+  --bdr-hi:  rgba(200,164,74,.5);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+html { height:100%; }
+
+body {
+  font-family:'Source Sans 3',sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background: var(--bg);
+  background-image: radial-gradient(rgba(200,164,74,.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+  color: var(--txt);
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════════════════ */
+#welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px 20px 64px;
+}
+#app { display: none; flex-direction: column; align-items: center; padding: 34px 20px 64px; }
+#app.visible { display: flex; }
+
+/* title block */
+.w-eyebrow {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; letter-spacing:.38em; color:var(--gold);
+  text-transform:uppercase; opacity:.6; margin-bottom:12px; text-align:center;
+}
+.w-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,5vw,3rem); font-weight:600;
+  color:var(--parch); line-height:1.05; text-align:center; letter-spacing:.02em;
+}
+.w-title em { font-style:italic; color:var(--gold); }
+.w-rule {
+  width:80px; height:1px; margin:18px auto 36px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+/* name input */
+.w-section { width:100%; max-width:440px; margin-bottom:32px; }
+.w-label {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.65; display:block; margin-bottom:10px;
+}
+.w-input {
+  width:100%; background:transparent;
+  border:none; border-bottom:1px solid var(--bdr-hi);
+  padding:10px 0;
+  font-family:'Cormorant Garamond',serif; font-size:1.35rem;
+  color:var(--parch); outline:none;
+  transition:border-color .2s;
+  -webkit-font-smoothing: antialiased;
+}
+.w-input:focus { border-color:var(--gold); }
+.w-input::placeholder { color:var(--txt-dim); font-style:italic; }
+
+/* mode selection */
+.mode-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  width:100%; max-width:560px; margin-bottom:0;
+}
+.mode-btn {
+  border:1px solid var(--bdr); background:transparent;
+  border-radius:5px; padding:18px 14px 16px;
+  cursor:pointer; text-align:left; transition:all .18s;
+  color:var(--txt-dim);
+}
+.mode-btn:hover { border-color:var(--gold); color:var(--txt); background:var(--gold-dim); }
+.mode-btn.active {
+  border-color:var(--gold); background:rgba(200,164,74,.16);
+  color:var(--parch);
+}
+.mode-btn .mico { font-size:1.3rem; margin-bottom:8px; display:block; opacity:.7; }
+.mode-btn .mname {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem; font-weight:600; display:block; line-height:1.2; margin-bottom:4px;
+}
+.mode-btn .mhint {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.58rem; letter-spacing:.08em; opacity:.5; display:block;
+}
+
+/* lecture grid */
+.lec-picker {
+  width:100%; max-width:560px; margin-top:14px;
+  overflow:hidden; max-height:0;
+  transition:max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s;
+  opacity:0;
+}
+.lec-picker.open { max-height:400px; opacity:1; }
+.lec-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+  padding:2px;
+}
+.lec-item {
+  border:1px solid var(--bdr); background:transparent;
+  border-radius:4px; padding:12px 12px 10px;
+  cursor:pointer; transition:all .15s; color:var(--txt-dim);
+  text-align:left;
+}
+.lec-item:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.lec-item.sel { border-color:var(--gold); background:rgba(200,164,74,.18); color:var(--parch); }
+.lec-item .lnum {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.56rem; letter-spacing:.15em; opacity:.55; display:block; margin-bottom:5px;
+}
+.lec-item .ltopic { font-size:.82rem; font-weight:600; display:block; line-height:1.25; }
+.lec-item .lcount {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.55rem; opacity:.4; display:block; margin-top:4px;
+}
+
+/* count picker (random mode) */
+.count-picker {
+  width:100%; max-width:560px; margin-top:14px;
+  overflow:hidden; max-height:0;
+  transition:max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s;
+  opacity:0;
+}
+.count-picker.open { max-height:110px; opacity:1; }
+.count-label {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.65; display:block; margin-bottom:16px;
+}
+.slider-row {
+  display:flex; align-items:center; gap:16px;
+}
+.count-value {
+  font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600;
+  color:var(--parch); min-width:42px; text-align:right; line-height:1;
+  flex-shrink:0;
+}
+.count-value span {
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
+  letter-spacing:.12em; color:var(--txt-dim); display:block; margin-top:3px;
+}
+/* custom range slider */
+input[type=range].count-range {
+  -webkit-appearance:none; appearance:none;
+  flex:1; height:3px; border-radius:2px; outline:none; cursor:pointer;
+  background: linear-gradient(to right,
+    var(--gold) 0%,
+    var(--gold) var(--fill,50%),
+    rgba(200,164,74,.18) var(--fill,50%),
+    rgba(200,164,74,.18) 100%
+  );
+}
+input[type=range].count-range::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:18px; height:18px; border-radius:50%;
+  background:var(--gold); border:2px solid var(--bg);
+  box-shadow:0 0 10px rgba(200,164,74,.5);
+  transition:transform .15s, box-shadow .15s;
+}
+input[type=range].count-range::-webkit-slider-thumb:hover {
+  transform:scale(1.2); box-shadow:0 0 16px rgba(200,164,74,.7);
+}
+input[type=range].count-range::-moz-range-thumb {
+  width:18px; height:18px; border-radius:50%;
+  background:var(--gold); border:2px solid var(--bg);
+  box-shadow:0 0 10px rgba(200,164,74,.5); cursor:pointer;
+}
+.slider-bounds {
+  display:flex; justify-content:space-between; margin-top:8px;
+  font-family:'IBM Plex Mono',monospace; font-size:.55rem;
+  letter-spacing:.1em; color:var(--txt-dim);
+  padding:0 1px;
+}
+
+/* start button */
+.start-btn {
+  margin-top:36px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.75rem; letter-spacing:.22em; text-transform:uppercase;
+  padding:14px 52px; background:var(--gold); color:var(--ink);
+  border:none; border-radius:3px; cursor:pointer; font-weight:500;
+  transition:all .2s;
+}
+.start-btn:hover { background:var(--gold-lt); transform:translateY(-2px); box-shadow:0 6px 24px rgba(200,164,74,.3); }
+.start-btn:active { transform:translateY(0); }
+.start-btn:disabled { opacity:.4; cursor:default; transform:none; }
+
+/* ── RESUME BANNER ── */
+.resume-banner {
+  width:100%; max-width:560px; margin-bottom:28px;
+  border:1px solid var(--bdr-hi); border-radius:6px;
+  padding:20px 24px; background:rgba(200,164,74,.07);
+  display:none;
+}
+.resume-banner.visible { display:block; }
+.resume-top {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  margin-bottom:12px;
+}
+.resume-title {
+  font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600;
+  color:var(--parch); line-height:1.2;
+}
+.resume-dismiss {
+  font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+  color:var(--txt-dim); background:none; border:none; cursor:pointer;
+  padding:0; line-height:1; flex-shrink:0; transition:color .15s;
+}
+.resume-dismiss:hover { color:var(--txt); }
+.resume-meta {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.08em; color:var(--txt-dim); line-height:1.8; margin-bottom:16px;
+}
+.resume-meta b { color:var(--txt); }
+.resume-meta .rm-k { color:#7ecb7e; }
+.resume-meta .rm-u { color:#e07878; }
+.resume-actions { display:flex; gap:10px; }
+.rb-continue {
+  font-family:'IBM Plex Mono',monospace; font-size:.68rem;
+  letter-spacing:.14em; text-transform:uppercase;
+  padding:10px 22px; background:var(--gold); color:var(--ink);
+  border:none; border-radius:3px; cursor:pointer; font-weight:500;
+  transition:background .18s;
+}
+.rb-continue:hover { background:var(--gold-lt); }
+.rb-fresh {
+  font-family:'IBM Plex Mono',monospace; font-size:.68rem;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:10px 18px; background:transparent; color:var(--txt-dim);
+  border:1px solid var(--bdr); border-radius:3px; cursor:pointer;
+  transition:all .18s;
+}
+.rb-fresh:hover { border-color:var(--gold); color:var(--txt); }
+
+/* ── SWIPE HINT (touch only) ── */
+.swipe-hint-touch {
+  display:none; text-align:center; margin-top:10px;
+  font-family:'IBM Plex Mono',monospace; font-size:.56rem;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--txt-dim);
+  opacity:.55;
+}
+@media (pointer:coarse) {
+  .swipe-hint-touch { display:block; }
+}
+
+/* ══════════════════════════════════════════
+   MAIN APP
+══════════════════════════════════════════ */
+header {
+  text-align:center; margin-bottom:24px; width:100%;
+}
+.eyebrow {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; letter-spacing:.35em;
+  color:var(--gold); text-transform:uppercase; opacity:.6; margin-bottom:10px;
+}
+h1 {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.6rem,4vw,2.4rem); font-weight:600;
+  color:var(--parch); letter-spacing:.03em; line-height:1.05;
+}
+h1 em { font-style:italic; color:var(--gold); }
+.greeting {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.63rem; letter-spacing:.18em; color:var(--gold);
+  opacity:.7; margin-top:6px;
+}
+.rule {
+  width:80px; height:1px; margin:14px auto 22px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+/* progress */
+.progress-wrap { width:100%; max-width:680px; margin-bottom:18px; }
+.progress-bar { height:1px; background:rgba(200,164,74,.12); }
+.progress-fill {
+  height:100%; background:var(--gold);
+  transition:width .45s cubic-bezier(.4,0,.2,1);
+  position:relative; box-shadow:0 0 8px rgba(200,164,74,.5);
+}
+.progress-fill::after {
+  content:''; position:absolute; right:-2px; top:50%; transform:translateY(-50%);
+  width:5px; height:5px; border-radius:50%;
+  background:var(--gold-lt); box-shadow:0 0 7px var(--gold-lt);
+}
+.progress-meta { display:flex; justify-content:space-between; margin-top:7px; }
+.progress-meta span {
+  font-family:'IBM Plex Mono',monospace; font-size:.61rem;
+  letter-spacing:.12em; color:var(--txt-dim);
+}
+
+/* ── CARD ── */
+.card-wrap { width:100%; max-width:680px; }
+.card {
+  border-radius:6px; padding:32px 38px 28px;
+  cursor:pointer; position:relative;
+  /* FRONT (parchment) */
+  background:var(--parch);
+  box-shadow: 0 12px 50px rgba(0,0,0,.7),
+              0 1px 0 rgba(255,255,255,.9) inset,
+              0 -1px 0 rgba(0,0,0,.1) inset;
+  /* sharp rendering — no GPU promotion at rest */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.card:hover {
+  box-shadow: 0 12px 50px rgba(0,0,0,.7),
+              0 0 0 2px rgba(200,164,74,.3),
+              0 1px 0 rgba(255,255,255,.9) inset;
+}
+
+/* FRONT content */
+.fc { display:flex; flex-direction:column; }
+.fc .ltag {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink-lt);
+  margin-bottom:16px; display:flex; align-items:center; gap:10px;
+}
+.fc .ltag::after { content:''; flex:1; height:1px; background:rgba(92,68,40,.2); }
+.fc .q {
+  font-family:'Cormorant Garamond',serif; font-size:1.42rem; font-weight:600;
+  line-height:1.55; color:var(--ink); min-height:68px;
+}
+.fc .hint {
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ink-lt);
+  opacity:.4; text-align:center; margin-top:24px;
+}
+
+/* BACK content */
+.bc { display:none; flex-direction:column; }
+.bc .ltag {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--gold);
+  opacity:.55; margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.bc .ltag::after { content:''; flex:1; height:1px; background:var(--bdr); }
+.bc .ans { font-size:.97rem; line-height:1.82; color:var(--txt); }
+.bc .ans b { color:var(--gold-lt); font-weight:700; }
+.bc mjx-container { color:var(--parch) !important; }
+
+/* FLIPPED */
+.card.flipped {
+  background:var(--bg2);
+  box-shadow: 0 12px 50px rgba(0,0,0,.85), 0 0 0 1px rgba(200,164,74,.2);
+}
+.card.flipped:hover { box-shadow: 0 12px 50px rgba(0,0,0,.85), 0 0 0 1px rgba(200,164,74,.4); }
+.card.flipped .fc { display:none; }
+.card.flipped .bc { display:flex; }
+
+/* nav */
+.nav { display:flex; align-items:center; gap:10px; margin-top:20px; }
+.nav button {
+  font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.08em;
+  padding:9px 20px; border:1px solid var(--bdr); background:transparent;
+  color:var(--txt); border-radius:3px; cursor:pointer; transition:all .18s;
+}
+.nav button:hover:not(:disabled) { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+.nav button:disabled { opacity:.2; cursor:default; }
+.nav .shuf { border-color:rgba(200,164,74,.4); color:var(--gold); }
+.nav .shuf:hover { background:var(--gold); color:var(--ink); }
+
+.back-link {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.12em; color:var(--txt-dim); cursor:pointer;
+  margin-top:14px; transition:color .18s; border:none; background:none;
+  padding:0;
+}
+.back-link:hover { color:var(--gold); }
+
+.kbd {
+  font-family:'IBM Plex Mono',monospace; font-size:.59rem;
+  letter-spacing:.11em; color:var(--txt-dim); margin-top:6px;
+}
+
+/* entrance animations */
+.fade-in { animation: riseIn .6s cubic-bezier(.2,0,.2,1) both; }
+@keyframes riseIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── VERDICT BUTTONS ── */
+.verdict-wrap {
+  width:100%; max-width:680px;
+  display:flex; gap:12px; margin-top:14px;
+  opacity:0; pointer-events:none;
+  transition:opacity .22s ease, transform .22s ease;
+  transform:translateY(6px);
+}
+.verdict-wrap.show { opacity:1; pointer-events:all; transform:translateY(0); }
+.v-btn {
+  flex:1; padding:13px 16px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem; letter-spacing:.14em; font-weight:500;
+  border-radius:4px; cursor:pointer; border:1px solid;
+  transition:all .18s; text-transform:uppercase;
+}
+.v-yes { border-color:rgba(100,195,100,.3); background:rgba(100,195,100,.07); color:#7ecb7e; }
+.v-yes:hover { background:rgba(100,195,100,.18); border-color:#7ecb7e; }
+.v-no  { border-color:rgba(220,90,90,.3);  background:rgba(220,90,90,.07);  color:#e07878; }
+.v-no:hover  { background:rgba(220,90,90,.18);  border-color:#e07878; }
+.v-yes.picked { background:rgba(100,195,100,.22); border-color:#7ecb7e; box-shadow:0 0 12px rgba(100,195,100,.2); }
+.v-no.picked  { background:rgba(220,90,90,.22);  border-color:#e07878; box-shadow:0 0 12px rgba(220,90,90,.2); }
+
+/* stats counters in progress row */
+.stat-k { font-family:'IBM Plex Mono',monospace; font-size:.61rem; letter-spacing:.1em; color:#7ecb7e; }
+.stat-u { font-family:'IBM Plex Mono',monospace; font-size:.61rem; letter-spacing:.1em; color:#e07878; }
+
+/* ── RESULTS SCREEN ── */
+#results {
+  display:none; flex-direction:column; align-items:center;
+  width:100%; padding:48px 20px 64px; min-height:100vh;
+}
+#results.visible { display:flex; }
+.res-eye {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.36em; color:var(--gold); text-transform:uppercase;
+  opacity:.65; margin-bottom:14px; text-align:center;
+}
+.res-score {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3rem,8vw,5rem); font-weight:700;
+  color:var(--parch); line-height:1; text-align:center;
+}
+.res-score em { font-style:normal; color:var(--gold); }
+.res-sub {
+  font-family:'IBM Plex Mono',monospace; font-size:.63rem;
+  letter-spacing:.2em; color:var(--txt-dim); margin-top:10px; text-align:center;
+}
+.res-rule {
+  width:60px; height:1px; margin:28px auto;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.res-summary {
+  font-family:'IBM Plex Mono',monospace; font-size:.65rem;
+  letter-spacing:.1em; color:var(--txt-dim); text-align:center;
+  margin-bottom:28px; line-height:1.8;
+}
+.res-summary b { color:var(--txt); }
+/* lecture breakdown table */
+.breakdown { width:100%; max-width:560px; margin-bottom:36px; }
+.bd-title {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.6; margin-bottom:14px;
+}
+.bd-row {
+  display:flex; align-items:center; gap:12px;
+  padding:7px 0; border-bottom:1px solid rgba(200,164,74,.08);
+}
+.bd-row:last-child { border-bottom:none; }
+.bd-name {
+  font-family:'IBM Plex Mono',monospace; font-size:.59rem;
+  letter-spacing:.06em; color:var(--txt-dim); flex:1; min-width:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bd-bar { width:70px; height:5px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; flex-shrink:0; }
+.bd-fill { height:100%; border-radius:3px; transition:width .6s cubic-bezier(.4,0,.2,1); }
+.bd-nums {
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
+  color:var(--txt-dim); white-space:nowrap; flex-shrink:0; min-width:52px; text-align:right;
+}
+/* action buttons */
+.res-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.res-btn {
+  font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+  letter-spacing:.14em; text-transform:uppercase;
+  padding:12px 26px; border-radius:3px; cursor:pointer;
+  font-weight:500; transition:all .2s; border:1px solid;
+}
+.rb-primary { background:var(--gold); color:var(--ink); border-color:var(--gold); }
+.rb-primary:hover { background:var(--gold-lt); transform:translateY(-1px); }
+.rb-secondary { background:transparent; color:var(--txt); border-color:var(--bdr); }
+.rb-secondary:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.rb-ghost { background:transparent; color:var(--txt-dim); border-color:rgba(200,164,74,.15); font-size:.62rem; }
+.rb-ghost:hover { color:var(--txt); border-color:var(--bdr); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     WELCOME SCREEN
+══════════════════════════════════════ -->
+<div id="welcome">
+  <!-- Resume banner (shown if saved progress exists) -->
+  <div class="resume-banner" id="resume-banner">
+    <div class="resume-top">
+      <div class="resume-title" id="resume-title">Продолжить с прошлого раза?</div>
+      <button class="resume-dismiss" onclick="dismissResume()" title="Закрыть">✕</button>
+    </div>
+    <div class="resume-meta" id="resume-meta"></div>
+    <div class="resume-actions">
+      <button class="rb-continue" onclick="resumeSession()">Продолжить →</button>
+      <button class="rb-fresh"    onclick="dismissResume()">Начать заново</button>
+    </div>
+  </div>
+
+  <div class="w-eyebrow">Подготовка к экзамену · МАТ. СТАТ.</div>
+  <div class="w-title">Математическая <em>Статистика</em></div>
+  <div class="w-rule"></div>
+
+  <!-- Name -->
+  <div class="w-section">
+    <label class="w-label" for="wname">Как вас зовут?</label>
+    <input class="w-input" id="wname" type="text" placeholder="Введите имя…" autocomplete="off" maxlength="40">
+  </div>
+
+  <!-- Mode -->
+  <div class="w-section" style="max-width:560px">
+    <span class="w-label">Режим изучения</span>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="ordered" onclick="setMode(this)">
+        <span class="mico">📋</span>
+        <span class="mname">По порядку</span>
+        <span class="mhint">все 85 карточек</span>
+      </button>
+      <button class="mode-btn" data-mode="random" onclick="setMode(this)">
+        <span class="mico">🎲</span>
+        <span class="mname">Случайные</span>
+        <span class="mhint" id="random-hint">выбрать количество</span>
+      </button>
+      <button class="mode-btn" data-mode="lecture" onclick="setMode(this)">
+        <span class="mico">📖</span>
+        <span class="mname">Лекция</span>
+        <span class="mhint">выбрать одну</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Count picker (shown when mode = random) -->
+  <div class="count-picker" id="count-picker">
+    <span class="count-label">Сколько карточек?</span>
+    <div class="slider-row">
+      <div class="count-value">
+        <span id="count-display">85</span>
+        <span>карточек</span>
+      </div>
+      <input class="count-range" id="count-range" type="range" min="1" max="85" value="85" oninput="onSlider(this)">
+    </div>
+    <div class="slider-bounds"><span>1</span><span>85</span></div>
+  </div>
+
+  <!-- Lecture picker (shown when mode = lecture) -->
+  <div class="lec-picker" id="lec-picker">
+    <div class="lec-grid" id="lec-grid"></div>
+  </div>
+
+  <button class="start-btn" id="start-btn" onclick="startSession()">Начать →</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app">
+  <header>
+    <div class="eyebrow" id="app-eyebrow">Мат. Статистика</div>
+    <h1>Математическая <em>Статистика</em></h1>
+    <div class="greeting" id="app-greeting"></div>
+  </header>
+  <div class="rule"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-meta">
+      <span id="plec">Все лекции</span>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <span class="stat-k" id="stat-k">✓ 0</span>
+        <span class="stat-u" id="stat-u">✗ 0</span>
+        <span id="pnum">1 / 85</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-wrap">
+    <div class="card" id="card" onclick="onCardClick()">
+      <div class="fc">
+        <div class="ltag" id="fc-lec"></div>
+        <div class="q"    id="fc-q"></div>
+        <div class="hint">нажмите, чтобы увидеть ответ</div>
+      </div>
+      <div class="bc">
+        <div class="ltag" id="bc-lec"></div>
+        <div class="ans"  id="bc-a"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verdict: shown after answer revealed -->
+  <div class="verdict-wrap" id="verdict-wrap">
+    <button class="v-btn v-yes" id="v-yes" onclick="verdict('known')">✓ &nbsp;Знаю</button>
+    <button class="v-btn v-no"  id="v-no"  onclick="verdict('unknown')">✗ &nbsp;Не знаю</button>
+  </div>
+
+  <div class="nav">
+    <button id="btn-prev" onclick="go(-1)">← назад</button>
+    <button id="btn-next" onclick="go(+1)">вперёд →</button>
+    <button class="shuf" onclick="doShuffle()">⇄ перемешать</button>
+  </div>
+  <button class="back-link" onclick="goBack()">↩ изменить режим</button>
+  <div class="kbd" id="kbd-hint">← → пробел</div>
+  <div class="swipe-hint-touch">← свайп → &nbsp;·&nbsp; ↑ открыть</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RESULTS SCREEN
+══════════════════════════════════════ -->
+<div id="results">
+  <div class="res-eye">Результаты сессии</div>
+  <div class="res-score"><em id="res-k">0</em> / <span id="res-t">0</span></div>
+  <div class="res-sub">карточек отвечено правильно</div>
+  <div class="res-rule"></div>
+  <div class="res-summary" id="res-summary"></div>
+  <div class="breakdown">
+    <div class="bd-title">По лекциям</div>
+    <div id="bd-rows"></div>
+  </div>
+  <div class="res-actions">
+    <button class="res-btn rb-primary"   id="btn-retry-weak" onclick="retryWeak()">↺ Повторить слабые</button>
+    <button class="res-btn rb-secondary" onclick="retryAll()">↺ Начать заново</button>
+    <button class="res-btn rb-ghost"     onclick="goBack()">↩ Изменить режим</button>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   SUPABASE
+================================================================ */
+const SB_URL = 'https://iiovgiqcphbwpgvxpgll.supabase.co';
+const SB_KEY = 'sb_publishable_jl_i6rnAxF7nXXHdjnHGSQ_bQ1M9gJK';
+
+function sbInsert(table, data) {
+  fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  }).catch(()=>{});
+}
+
+/* ── Device fingerprint ── */
+function getDeviceId() {
+  let id = localStorage.getItem('matstat_device_id');
+  if (!id) {
+    id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+    localStorage.setItem('matstat_device_id', id);
+  }
+  return id;
+}
+
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+  // device type
+  const isMobile  = /Mobi|Android|iPhone/i.test(ua);
+  const isTablet  = /iPad|Android(?!.*Mobi)/i.test(ua);
+  const deviceType = isTablet ? 'tablet' : isMobile ? 'mobile' : 'desktop';
+  // browser
+  let browser = 'Other';
+  if (/Edg\//i.test(ua))       browser = 'Edge';
+  else if (/OPR|Opera/i.test(ua)) browser = 'Opera';
+  else if (/Chrome/i.test(ua)) browser = 'Chrome';
+  else if (/Firefox/i.test(ua)) browser = 'Firefox';
+  else if (/Safari/i.test(ua)) browser = 'Safari';
+  // OS
+  let os = 'Other';
+  if (/Windows/i.test(ua))     os = 'Windows';
+  else if (/Mac OS X/i.test(ua)) os = 'macOS';
+  else if (/Android/i.test(ua)) os = 'Android';
+  else if (/iPhone|iPad/i.test(ua)) os = 'iOS';
+  else if (/Linux/i.test(ua))  os = 'Linux';
+
+  return {
+    device_id:   getDeviceId(),
+    device_type: deviceType,
+    browser:     browser,
+    os:          os,
+    language:    navigator.language || null,
+    timezone:    Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+    screen_w:    screen.width || null
+  };
+}
+
+async function getLocation() {
+  try {
+    const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+    const d = await r.json();
+    return { country: d.country_name || null, city: d.city || null };
+  } catch { return { country: null, city: null }; }
+}
+
+/* ================================================================
+   CARD DATA
+================================================================ */
+const ALL = [
+// ── Лекция 1: Выборка ─────────────────────────────────────────
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>генеральной совокупности</em>.",
+ a:"<b>Генеральной совокупностью</b> называется совокупность всех однородных объектов, подлежащих изучению."},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочной совокупности</em> (выборки).",
+ a:"<b>Выборочной совокупностью</b> или <b>выборкой</b> называется совокупность объектов, случайно отобранных из генеральной совокупности."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>объёмом совокупности</em>?",
+ a:"<b>Объёмом совокупности</b> (генеральной или выборочной) называется число её объектов."},
+{lec:"Лекция 1. Выборка",
+ q:"Назовите типы выборок.",
+ a:"1) <b>повторная</b> — отобранный объект возвращается.<br>2) <b>бесповторная</b> — отобранный объект не возвращается."},
+{lec:"Лекция 1. Выборка",
+ q:"Когда выборка называется <em>репрезентативной</em>?",
+ a:"Выборка называется <b>репрезентативной</b> (представительной), если она достаточно хорошо воспроизводит генеральную совокупность."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>вариантами</em> и <em>вариационным рядом</em>?",
+ a:"Различные значения признака (случайной величины Х) называются <b>вариантами</b> и обозначаются $x_i$, а последовательность вариант, записанных в возрастающем порядке, называется <b>вариационным рядом</b>."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>частотой</em> значения $x_i$? Что называется <em>относительной частотой</em>?",
+ a:"Число $n_i$ появлений значения $x_i$ в выборке называется <b>частотой</b> значения $x_i$, а отношение $\\omega_i = \\dfrac{n_i}{n}$ — <b>относительной частотой</b> этого значения."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>статистическим распределением</em> (статистическим рядом) выборки?",
+ a:"<b>Статистическим распределением</b> (или <b>статистическим рядом</b>) выборки называется таблица, в верхней строке которой указаны значения выборки, а в нижней — соответствующие им частоты или относительные частоты."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>полигоном относительных частот</em> выборки?",
+ a:"<b>Полигоном относительных частот</b> выборки называется ломаная с вершинами в точках $(x_i,\\,\\omega_i)$."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>группированным статистическим рядом</em> выборки?",
+ a:"<b>Группированным статистическим рядом</b> выборки называется таблица, в верхней строке которой указаны интервалы (либо их границы), а в нижней — соответствующие им относительные частоты."},
+{lec:"Лекция 1. Выборка",
+ q:"Что называется <em>гистограммой</em>?",
+ a:"<b>Гистограммой</b> называется графическое изображение группированного статистического ряда выборки."},
+{lec:"Лекция 1. Выборка",
+ q:"Запишите <em>формулу Стерджеса</em>.",
+ a:"Рекомендуемое число интервалов: $r = [1 + 3{,}322\\lg n]$.<br>Длина интервала: $h = \\dfrac{x_{\\max}-x_{\\min}}{r}$.<br>Начало первого интервала: $x_{\\text{нач}} = x_{\\min} - \\dfrac{h}{2}$."},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>эмпирической функции распределения</em>.",
+ a:"<b>Эмпирической функцией распределения</b> называют функцию $F^*(x)$, определённую формулой $$F^*(x)=\\sum_{x_i < x}\\omega_i,$$ где суммируются относительные частоты тех значений $x_i$ из выборки, которые меньше $x$."},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочной средней</em>.",
+ a:"<b>Выборочной средней</b> $\\bar{x}$ называется среднее арифметическое значений выборки $$\\bar{x}=\\frac{1}{n}\\sum_{i=1}^{n}x_i.$$ (Является оценкой для математического ожидания случайной величины Х.)"},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочной дисперсии</em>.",
+ a:"<b>Выборочной дисперсией</b> $D^*$ (или $S^2$) называется среднее арифметическое квадратов отклонений значений выборки от выборочной средней $$D^*=\\frac{1}{n}\\sum_{i=1}^{n}(x_i-\\bar{x})^2.$$ (Является оценкой для дисперсии случайной величины Х.)"},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочного СКО</em>.",
+ a:"<b>Выборочным СКО</b> называется квадратный корень из выборочной дисперсии $$\\sigma^*=\\sqrt{D^*}.$$ (Является оценкой для СКО случайной величины Х.)"},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочной моды</em>.",
+ a:"<b>Выборочной модой</b> $Mo^*$ называется варианта, имеющая наибольшую частоту."},
+{lec:"Лекция 1. Выборка",
+ q:"Дайте определение <em>выборочной медианы</em>.",
+ a:"<b>Выборочной медианой</b> $Me^*$ называется значение признака, приходящееся на середину ранжированного ряда наблюдений: $$Me^*=\\begin{cases}x_{\\frac{n+1}{2}}, & n\\text{ — нечётное},\\\\[6pt]\\dfrac{x_{\\frac{n}{2}}+x_{\\frac{n}{2}+1}}{2}, & n\\text{ — чётное}.\\end{cases}$$"},
+// ── Лекция 2: Оценка параметров ───────────────────────────────
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>оценкой</em> параметра $\\theta$?",
+ a:"<b>Оценкой</b> $\\tilde{\\theta}_n$ (или $T_n$) параметра $\\theta$ называют любую функцию от результатов наблюдений над случайной величиной Х: $$\\tilde{\\theta}_n=\\tilde{\\theta}_n(X_1,X_2,\\ldots,X_n).$$"},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>несмещённой оценкой</em>?",
+ a:"Оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>несмещённой</b>, если её математическое ожидание равно оцениваемому параметру: $$M(\\tilde{\\theta}_n)=\\theta.$$ В противном случае оценка называется <b>смещённой</b>."},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Перечислите <em>примеры несмещённых оценок</em>.",
+ a:"1) $\\bar{x}=\\dfrac{1}{n}\\sum x_i$ — несмещённая оценка математического ожидания;<br>2) $S^2=\\dfrac{1}{n{-}1}\\sum(x_i-\\bar{x})^2$ — несмещённая оценка дисперсии $\\sigma^2$;<br>3) $S=\\sqrt{S^2}$ — несмещённая оценка стандартного отклонения $\\sigma$."},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>состоятельной оценкой</em>?",
+ a:"Оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>состоятельной</b>, если она удовлетворяет закону больших чисел: $$\\lim_{n\\to\\infty}P(|\\tilde{\\theta}_n-\\theta|<\\varepsilon)=1\\quad\\text{для любого }\\varepsilon>0.$$"},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>эффективной оценкой</em>?",
+ a:"Несмещённая оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>эффективной</b>, если при заданном объёме выборки она имеет наименьшую дисперсию: $$D(\\tilde{\\theta}_n)=D_{\\min}.$$"},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>доверительной вероятностью</em> (надёжностью)?",
+ a:"<b>Доверительной вероятностью</b>, или <b>надёжностью</b>, оценки $\\tilde{\\theta}_n$ параметра $\\theta$ называется вероятность $\\gamma$, с которой осуществляется неравенство $|\\tilde{\\theta}_n-\\theta|<\\varepsilon$: $$P(|\\tilde{\\theta}_n-\\theta|<\\varepsilon)=\\gamma.$$"},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Что называется <em>доверительным интервалом</em>?",
+ a:"Интервал $(\\tilde{\\theta}_n-\\varepsilon,\\;\\tilde{\\theta}_n+\\varepsilon)$, который покрывает неизвестный параметр $\\theta$ с заданной надёжностью $\\gamma$, называется <b>доверительным интервалом</b>."},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Доверительный интервал для $M(X)$ при <em>известном</em> $\\sigma$.",
+ a:"$$\\left(\\bar{x}-u_\\gamma\\frac{\\sigma}{\\sqrt{n}},\\;\\bar{x}+u_\\gamma\\frac{\\sigma}{\\sqrt{n}}\\right),$$ где $u_\\gamma$ определяется из уравнения $\\Phi(u_\\gamma)=\\dfrac{1+\\gamma}{2}$; $\\Phi(x)$ — функция нормированного нормального распределения."},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Доверительный интервал для $M(X)$ при <em>неизвестном</em> $\\sigma$.",
+ a:"$$\\left(\\bar{x}-t_\\gamma\\frac{S}{\\sqrt{n}},\\;\\bar{x}+t_\\gamma\\frac{S}{\\sqrt{n}}\\right),$$ где $t_\\gamma$ определяется по таблицам распределения Стьюдента для заданной надёжности $\\gamma$; $S^2$ — исправленная дисперсия."},
+{lec:"Лекция 2. Оценка параметров",
+ q:"Доверительный интервал для дисперсии $\\sigma^2$.",
+ a:"$$\\left(\\frac{(n-1)S^2}{u_2},\\;\\frac{(n-1)S^2}{u_1}\\right),$$ где $u_1$ и $u_2$ ($u_2>u_1$) находятся из таблиц $\\chi^2$-распределения (распределения Пирсона) для заданной надёжности $\\gamma$."},
+// ── Лекция 3: Методы нахождения оценок ────────────────────────
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"В чём заключается сущность <em>метода моментов</em>?",
+ a:"Сущность метода заключается в <b>приравнивании теоретических моментов</b> распределения соответствующим <b>эмпирическим моментам</b>."},
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"Как найти оценку <em>одного параметра</em> методом моментов?",
+ a:"Приравниваем математическое ожидание СВ Х выборочной средней: $$M(X)=\\bar{x}.$$ Решив это уравнение относительно $\\theta$, получим точечную оценку $\\hat{\\theta}$."},
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"Как найти оценки <em>двух параметров</em> методом моментов?",
+ a:"Приравниваем два первых теоретических момента эмпирическим: $$\\begin{cases}M(X)=\\bar{x},\\\\D(X)=D^*.\\end{cases}$$ Решив систему, получим точечные оценки $\\hat{\\theta}_1$ и $\\hat{\\theta}_2$."},
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"Что называется <em>функцией правдоподобия ДСВ</em>?",
+ a:"<b>Функцией правдоподобия</b> ДСВ Х называется функция, выражающая вероятность совместного появления результатов выборки $x_1,\\ldots,x_n$: $$L(x_1,\\ldots,x_n;\\theta)=P(x_1;\\theta)\\cdot P(x_2;\\theta)\\cdots P(x_n;\\theta).$$"},
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"Что называется <em>функцией правдоподобия НСВ</em>?",
+ a:"<b>Функцией правдоподобия</b> НСВ Х называется функция, выражающая плотность вероятности совместного появления результатов выборки $x_1,\\ldots,x_n$: $$L(x_1,\\ldots,x_n;\\theta)=f(x_1;\\theta)\\cdot f(x_2;\\theta)\\cdots f(x_n;\\theta).$$"},
+{lec:"Лекция 3. Методы нахождения оценок",
+ q:"В чём суть <em>метода максимального правдоподобия</em>?",
+ a:"В качестве оценки параметра $\\theta$ принимается значение $\\hat{\\theta}$, которое <b>максимизирует функцию правдоподобия</b>. Для этого решают <b>уравнение правдоподобия</b>: $$\\frac{d\\ln L}{d\\theta}=0,$$ и выбирают решение, обращающее $\\ln L$ в максимум."},
+// ── Лекция 4: Статистические гипотезы ─────────────────────────
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Что называется <em>статистической гипотезой</em>?",
+ a:"<b>Статистической гипотезой</b> называется любое предположение о виде или параметрах неизвестного закона распределения."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Что такое <em>нулевая</em> и <em>конкурирующая</em> гипотезы?",
+ a:"Проверяемую гипотезу называют <b>нулевой</b> и обозначают $H_0$. <b>Конкурирующей (альтернативной)</b> называют гипотезу $H_1$, которая противоречит нулевой."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Какие ошибки возможны при проверке гипотез?",
+ a:"1) <b>Ошибка I рода</b> — отвергнута гипотеза $H_0$ в то время, когда она верна.<br>2) <b>Ошибка II рода</b> — принята гипотеза $H_0$ в то время, когда она неверна."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Что называется <em>статистическим критерием</em>?",
+ a:"Правило, по которому гипотеза $H_0$ отвергается или принимается, называется <b>статистическим критерием</b> или просто <b>критерием</b>."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Что называется <em>уровнем значимости</em> и <em>мощностью</em> критерия?",
+ a:"Вероятность $\\alpha$ называется <b>уровнем значимости</b> критерия, а вероятность $(1-\\beta)$ называется <b>мощностью</b> критерия.<br>($\\alpha$ — вероятность ошибки I рода; $\\beta$ — вероятность ошибки II рода.)"},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Что такое <em>критическая область</em> и <em>область принятия</em> гипотезы?",
+ a:"<b>Область принятия гипотезы</b> (допустимая область) — подмножество значений статистики, при которых $H_0$ принимается.<br><br><b>Критическая область</b> $W$ — подмножество значений статистики, при которых $H_0$ отвергается."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Сформулируйте <em>основной принцип</em> проверки статистических гипотез.",
+ a:"Если наблюдаемое значение статистики $\\tilde{\\chi}_n$ <b>принадлежит критической области</b> $W$, то гипотезу <b>отвергают</b>; если принадлежит области принятия — <b>принимают</b>."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Статистика для проверки гипотезы о среднем при <em>известном</em> $\\sigma$.",
+ a:"Используют СВ $$Z=\\frac{\\bar{X}-\\mu_0}{\\sigma}\\sqrt{n}\\sim N(0,1),$$ где $n$ — объём выборки."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Статистика для проверки гипотезы о среднем при <em>неизвестном</em> $\\sigma$.",
+ a:"Используют СВ $$t=\\frac{\\bar{X}-\\mu_0}{S}\\sqrt{n},$$ которая имеет распределение Стьюдента с числом степеней свободы $k=n-1$."},
+{lec:"Лекция 4. Статистические гипотезы",
+ q:"Статистика для проверки <em>гипотезы о дисперсии</em>.",
+ a:"Используют СВ $$\\chi^2=\\frac{(n-1)S^2}{\\sigma_0^2},$$ а для критических областей — таблицы $\\chi^2$-распределения с числом степеней свободы $k=n-1$."},
+// ── Лекция 5 ──────────────────────────────────────────────────
+{lec:"Лекция 5. Сравнение двух совокупностей",
+ q:"Статистика для проверки гипотезы о <em>равенстве средних</em> двух генеральных совокупностей.",
+ a:"$$t=\\frac{\\bar{X}_1-\\bar{X}_2}{\\sqrt{\\dfrac{(n_1{-}1)S_1^2+(n_2{-}1)S_2^2}{n_1+n_2-2}\\cdot\\left(\\dfrac{1}{n_1}+\\dfrac{1}{n_2}\\right)}},$$ $t\\sim t(n_1+n_2-2)$."},
+{lec:"Лекция 5. Сравнение двух совокупностей",
+ q:"Статистика для проверки гипотезы о <em>равенстве дисперсий</em> двух генеральных совокупностей.",
+ a:"$$F=\\frac{S^2_{\\max}}{S^2_{\\min}},$$ где $S^2_{\\max}=\\max(S_1^2,S_2^2)$, $S^2_{\\min}=\\min(S_1^2,S_2^2)$.<br>Если $H_0$ верна, $F\\sim F(n_{\\max}{-}1,\\,n_{\\min}{-}1)$."},
+// ── Лекция 6 ──────────────────────────────────────────────────
+{lec:"Лекция 6. Критерий согласия",
+ q:"Что называется <em>критерием согласия</em>?",
+ a:"<b>Критерием согласия</b> называется критерий проверки гипотезы о предполагаемом законе неизвестного распределения."},
+{lec:"Лекция 6. Критерий согласия",
+ q:"Формула статистики <em>$\\chi^2$-Пирсона</em> и число степеней свободы.",
+ a:"$$Q^2=\\sum_{i=1}^{k}\\frac{(n_i-m_i)^2}{m_i},$$ где $n_i$ — эмпирические, $m_i=np_i$ — теоретические частоты.<br>$Q^2\\sim\\chi^2(k-r-1)$, где $k$ — число интервалов, $r$ — число оценённых параметров."},
+{lec:"Лекция 6. Критерий согласия",
+ q:"Опишите <em>алгоритм</em> проверки гипотезы о законе распределения ($\\chi^2$-Пирсона).",
+ a:"<b>Этап 1.</b> Разбить область изменения СВ $X$ на $k$ интервалов.<br><b>Этап 2.</b> Найти эмпирические частоты $n_i$. Если $n_i<5$ — объединить с соседним.<br><b>Этап 3.</b> Вычислить вероятности $p_i$ по теоретическому закону ($\\sum p_i=1$).<br><b>Этап 4.</b> Найти теоретические частоты $m_i=np_i$.<br><b>Этап 5.</b> Составить таблицу.<br><b>Этап 6.</b> Вычислить $Q^2=\\sum(n_i-m_i)^2/m_i$.<br><b>Этап 7.</b> Найти $x_\\alpha$ из $P(Q^2>x_\\alpha)=\\alpha$ при $k-r-1$ ст.св.<br><b>Этап 8.</b> $Q^2\\in W$ → отвергнуть $H_0$; $Q^2\\notin W$ → принять $H_0$."},
+// ── Лекция 7 ──────────────────────────────────────────────────
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Что называется <em>уровнем фактора</em>?",
+ a:"<b>Уровнем фактора</b> называется некоторая его мера или состояние."},
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Что называется <em>групповой средней</em>?",
+ a:"$$\\bar{x}_j=\\frac{1}{n}\\sum_{i=1}^{n}x_{ij},\\quad j=1,2,\\ldots,m.$$ Среднее арифметическое значений выборки для $j$-го уровня фактора называется <b>групповой средней</b>."},
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Что называется <em>общей средней</em>?",
+ a:"Среднее арифметическое всех значений выборки называется <b>общей средней</b>: $$\\bar{x}=\\frac{1}{N}\\sum_{j=1}^{m}\\sum_{i=1}^{n}x_{ij}.$$"},
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Дайте определения трёх сумм квадратов и их соотношение.",
+ a:"<b>Общая:</b> $Q_{\\text{общ}}=\\sum\\sum(x_{ij}-\\bar{x})^2$<br><b>Факторная:</b> $Q_{\\text{факт}}=n\\sum(\\bar{x}_j-\\bar{x})^2$<br><b>Остаточная:</b> $Q_{\\text{ост}}=\\sum\\sum(x_{ij}-\\bar{x}_j)^2$<br><br>$$Q_{\\text{общ}}=Q_{\\text{факт}}+Q_{\\text{ост}}.$$"},
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Что называется <em>факторной</em> и <em>остаточной дисперсиями</em>?",
+ a:"<b>Факторная дисперсия:</b> $S^2_{\\text{факт}}=\\dfrac{Q_{\\text{факт}}}{m-1}$<br><br><b>Остаточная дисперсия:</b> $S^2_{\\text{ост}}=\\dfrac{Q_{\\text{ост}}}{N-m}$"},
+{lec:"Лекция 7. Дисперсионный анализ",
+ q:"Статистика и принцип принятия решения в <em>дисперсионном анализе</em>.",
+ a:"Статистика $F=S^2_{\\text{факт}}/S^2_{\\text{ост}}\\sim F(m{-}1,N{-}m)$ при верной $H_0$.<br><br>Если $F\\geq F_{\\text{кр}}(\\alpha,k_1,k_2)$ — влияние <b>значимо</b> ($H_0$ отвергается).<br>Если $F < F_{\\text{кр}}$ — влияние <b>незначимо</b> ($H_0$ принимается)."},
+// ── Лекция 8 ──────────────────────────────────────────────────
+{lec:"Лекция 8. Корреляция и регрессия",
+ q:"Что называется <em>вероятностной (статистической) зависимостью</em>?",
+ a:"Зависимость между двумя случайными величинами называется <b>вероятностной (стохастической или статистической)</b>, если каждому значению одной из них соответствует определённое (условное) распределение другой."},
+{lec:"Лекция 8. Корреляция и регрессия",
+ q:"Что называется <em>корреляционной зависимостью</em>?",
+ a:"<b>Корреляционной зависимостью</b> между двумя величинами называется функциональная зависимость между значениями одной из них и условным математическим ожиданием другой."},
+{lec:"Лекция 8. Корреляция и регрессия",
+ q:"Что называется <em>уравнениями регрессии</em>?",
+ a:"Уравнения $M(Y|X{=}x)=f(x)$ и $M(X|Y{=}y)=\\varphi(y)$ называются <b>модельными уравнениями регрессии</b> соответственно $Y$ на $X$ и $X$ на $Y$."},
+{lec:"Лекция 8. Корреляция и регрессия",
+ q:"Что называется <em>условным средним</em> $\\bar{y}_x$?",
+ a:"<b>Условным средним</b> $\\bar{y}_x$ называется среднее арифметическое наблюдаемых значений $Y$, соответствующих $X=x$."},
+{lec:"Лекция 8. Корреляция и регрессия",
+ q:"Нормальные уравнения МНК и формулы для $k$ и $b$ в уравнении $\\bar{y}_x=kx+b$.",
+ a:"$$\\begin{cases}k\\sum x_i^2+b\\sum x_i=\\sum x_iy_i,\\\\k\\sum x_i+bn=\\sum y_i.\\end{cases}$$ $$k=\\frac{n\\sum x_iy_i-\\sum x_i\\cdot\\sum y_i}{n\\sum x_i^2-(\\sum x_i)^2},\\quad b=\\frac{\\sum x_i^2\\cdot\\sum y_i-\\sum x_i\\cdot\\sum x_iy_i}{n\\sum x_i^2-(\\sum x_i)^2}.$$"},
+// ── Лекция 9 ──────────────────────────────────────────────────
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Что называется <em>выборочной ковариацией</em>?",
+ a:"$$K^*_{xy}=\\frac{1}{n}\\sum_{i=1}^{n}(x_i-\\bar{x})(y_i-\\bar{y})$$ называется <b>выборочной ковариацией</b> СВ $X$ и $Y$.<br>Формула вычисления: $K^*_{xy}=\\overline{xy}-\\bar{x}\\cdot\\bar{y}$."},
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Что называется <em>выборочным коэффициентом корреляции</em>?",
+ a:"$$r^*=\\frac{K^*_{xy}}{\\sigma^*_x\\cdot\\sigma^*_y},$$ где $\\sigma^*_x$, $\\sigma^*_y$ — выборочные СКО СВ $X$ и $Y$, называется <b>выборочным коэффициентом корреляции</b>."},
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Что называется <em>выборочным коэффициентом регрессии</em> $Y$ на $X$?",
+ a:"Угловой коэффициент $k$ прямой регрессии $Y$ на $X$ называется <b>выборочным коэффициентом регрессии</b> $\beta^*_{yx}$. При этом: $$\\beta^*_{yx}=r^*\\frac{\\sigma^*_y}{\\sigma^*_x},\\quad \\beta^*_{xy}=r^*\\frac{\\sigma^*_x}{\\sigma^*_y}.$$"},
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Выборочные линейные уравнения регрессии через <em>коэффициент корреляции</em>.",
+ a:"а) $Y$ на $X$: $$\\bar{y}_x-\\bar{y}=r^*\\frac{\\sigma^*_y}{\\sigma^*_x}(x-\\bar{x}).$$ б) $X$ на $Y$: $$\\bar{x}_y-\\bar{x}=r^*\\frac{\\sigma^*_x}{\\sigma^*_y}(y-\\bar{y}).$$"},
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Каковы <em>свойства</em> выборочного коэффициента корреляции?",
+ a:"1) $-1\\leq r^*\\leq 1$.<br>2) При $|r^*|=1$ — линейная функциональная зависимость, все точки на одной прямой.<br>3) При $r^*=0$ — линейная корреляционная связь отсутствует, линии регрессии параллельны осям координат."},
+{lec:"Лекция 9. Коэффициент корреляции",
+ q:"Как проверить <em>значимость</em> коэффициента корреляции?",
+ a:"$H_0:\\{r_{xy}=0\\}$, $H_1:\\{r_{xy}\\neq 0\\}$. Статистика: $$t=\\frac{r^*\\sqrt{n-2}}{\\sqrt{1-(r^*)^2}}\\sim t(n-2).$$ Критическая область двусторонняя: $|t|>t_{\\text{кр}}(\\alpha,\\,n-2)$."},
+// ── Лекция 10 ─────────────────────────────────────────────────
+{lec:"Лекция 10. Ранговая корреляция",
+ q:"Что называется <em>выборочным коэффициентом ранговой корреляции Спирмена</em>?",
+ a:"$$\\rho^*=1-\\frac{6\\displaystyle\\sum_{i=1}^{n}(r_i-s_i)^2}{n^3-n}$$ называется <b>выборочным коэффициентом ранговой корреляции Спирмена</b>. Здесь $n$ — число наблюдений; $r_i$ и $s_i$ — ранги $i$-ого объекта по признакам $X$ и $Y$."},
+{lec:"Лекция 10. Ранговая корреляция",
+ q:"Каковы <em>свойства</em> коэффициента Спирмена?",
+ a:"1) Если $r_i=s_i$ для всех $i$, то $\\rho^*=1$.<br>2) Если ранги расположены в обратном порядке, то $\\rho^*=-1$.<br>3) Во всех случаях $-1\\leq\\rho^*\\leq 1$."},
+{lec:"Лекция 10. Ранговая корреляция",
+ q:"Как проверить <em>значимость</em> коэффициента Спирмена?",
+ a:"Статистика $t=\\dfrac{\\rho^*\\sqrt{n-2}}{\\sqrt{1-(\\rho^*)^2}}\\sim t(n-2)$ при верной $H_0$.<br>Коэффициент $\\rho^*$ значим, если $|t|>t_{\\text{кр}}(\\alpha,n-2)$ (двусторонняя крит. область)."},
+// ── Лекция 11 ─────────────────────────────────────────────────
+{lec:"Лекция 11. Моделирование СВ",
+ q:"Что называется <em>моделированием</em>?",
+ a:"<b>Моделирование</b> — замена изучаемого объекта другим объектом (моделью), исследование этой модели и распространение результатов исследования на оригинал (исходный объект)."},
+{lec:"Лекция 11. Моделирование СВ",
+ q:"Что называется <em>методом Монте-Карло</em>?",
+ a:"Метод моделирования, в котором используется искусственная реализация вероятностных законов, называется <b>методом Монте-Карло</b> или <b>методом статистических испытаний</b>."},
+{lec:"Лекция 11. Моделирование СВ",
+ q:"Что называется <em>моделированием случайной величины</em>?",
+ a:"Процесс получения на компьютере последовательности выборочных значений случайной величины с заданным распределением называется <b>моделированием случайной величины</b>."},
+{lec:"Лекция 11. Моделирование СВ",
+ q:"Алгоритм преобразования НСВ $X\\sim U(0,1)$ в НСВ $Y$ с функцией распределения $G(y)$.",
+ a:"1) Находим $G^{-1}(x)$ — решаем уравнение $x=G(y)$ относительно $y$.<br>2) «Разыгрываем» значение $x$ НСВ $X$.<br>3) Вычисляем $y=G^{-1}(x)$."},
+{lec:"Лекция 11. Моделирование СВ",
+ q:"Алгоритм преобразования НСВ $X\\sim U(0,1)$ в ДСВ $Y$ с рядом распределения.",
+ a:"1) Разбиваем $(0,1)$: $\\Delta_1=(0,p_1]$, $\\Delta_2=(p_1,p_1{+}p_2]$, …, $\\Delta_n=(p_1{+}\\ldots{+}p_{n-1},1)$.<br>2) «Разыгрываем» $x$ НСВ $X$.<br>3) Если $x\\in\\Delta_i$, то $Y=y_i$."},
+// ── Лекция 12 ─────────────────────────────────────────────────
+{lec:"Лекция 12. Законы распределения",
+ q:"Что называется <em>гамма-функцией</em>? Запишите её свойства.",
+ a:"$$\\Gamma(a)=\\int_0^{\\infty}x^{a-1}e^{-x}\\,dx.$$ Свойства: 1) $\\Gamma(a{+}1)=a\\Gamma(a)$; 2) $\\Gamma(n{+}1)=n!$; 3) $\\Gamma(a)\\to\\infty$ при $a\\to 0$ и $a\\to\\infty$; 4) Минимум при $a_0\\approx1{,}46$, равный $\\approx0{,}88$."},
+{lec:"Лекция 12. Законы распределения",
+ q:"Что называется <em>$\\chi^2$-распределением</em> (Пирсона)?",
+ a:"Распределение суммы квадратов $n$ независимых $N(0,1)$-СВ: $$\\chi^2=Z_1^2+\\ldots+Z_n^2.$$ $$M(\\chi^2)=n,\\quad D(\\chi^2)=2n.$$"},
+{lec:"Лекция 12. Законы распределения",
+ q:"Что называется <em>распределением Стьюдента</em>? $M(t)$, $D(t)$.",
+ a:"Распределение СВ $t=Z/\\sqrt{\\chi^2/n}$, где $Z\\sim N(0,1)$; $\\chi^2$ — независимое $\\chi^2(n)$. $$M(t)=0,\\quad D(t)=\\frac{n}{n-2}\\;(n>2).$$"},
+{lec:"Лекция 12. Законы распределения",
+ q:"Что называется <em>распределением Фишера–Снедекора</em>? $M(F)$, $D(F)$.",
+ a:"Распределение СВ $F=\\dfrac{\\chi^2(n_1)/n_1}{\\chi^2(n_2)/n_2}$, где $\\chi^2(n_1)$, $\\chi^2(n_2)$ — независимые. $$M(F)=\\frac{n_2}{n_2-2}\\;(n_2{>}2);\\quad D(F)=\\frac{2n_2^2(n_1{+}n_2{-}2)}{n_1(n_2{-}2)^2(n_2{-}4)}\\;(n_2{>}4).$$"},
+{lec:"Лекция 12. Законы распределения",
+ q:"Что называется <em>гамма-распределением</em>? $M(X)$, $D(X)$.",
+ a:"НСВ $X$ имеет гамма-распределение, если $$f(x)=\\begin{cases}\\dfrac{\\lambda^a}{\\Gamma(a)}x^{a-1}e^{-\\lambda x}, & x>0,\\\\0, & x\\leq 0\\end{cases}\\quad(a,\\lambda>0).$$ $$M(X)=\\frac{a}{\\lambda},\\quad D(X)=\\frac{a}{\\lambda^2}.$$"},
+];
+
+/* ================================================================
+   WELCOME SCREEN LOGIC
+================================================================ */
+const LECS = [...new Set(ALL.map(c=>c.lec))];
+const TOPICS = {
+  'Лекция 1. Выборка':                      'Выборка',
+  'Лекция 2. Оценка параметров':            'Оценка параметров',
+  'Лекция 3. Методы нахождения оценок':     'Методы оценок',
+  'Лекция 4. Статистические гипотезы':      'Стат. гипотезы',
+  'Лекция 5. Сравнение двух совокупностей': 'Сравнение двух',
+  'Лекция 6. Критерий согласия':            'Критерий согласия',
+  'Лекция 7. Дисперсионный анализ':         'Дисп. анализ',
+  'Лекция 8. Корреляция и регрессия':       'Регрессия',
+  'Лекция 9. Коэффициент корреляции':       'Коэфф. корреляции',
+  'Лекция 10. Ранговая корреляция':         'Ранг. корреляция',
+  'Лекция 11. Моделирование СВ':            'Моделирование',
+  'Лекция 12. Законы распределения':        'Законы распред.',
+};
+
+let chosenMode = 'ordered';
+let chosenLec  = null;
+
+// Build lecture grid
+const grid = document.getElementById('lec-grid');
+LECS.forEach((l,i) => {
+  const cnt = ALL.filter(c=>c.lec===l).length;
+  const btn = document.createElement('button');
+  btn.className = 'lec-item';
+  btn.dataset.lec = l;
+  btn.innerHTML = `<span class="lnum">ЛЕК. ${i+1}</span><span class="ltopic">${TOPICS[l]||l}</span><span class="lcount">${cnt} карточек</span>`;
+  btn.onclick = () => selectLec(btn, l);
+  grid.appendChild(btn);
+});
+
+let chosenCount = 85; // default: all
+
+function setMode(btn) {
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  chosenMode = btn.dataset.mode;
+
+  const lecPicker   = document.getElementById('lec-picker');
+  const countPicker = document.getElementById('count-picker');
+
+  lecPicker.classList.toggle('open',   chosenMode === 'lecture');
+  countPicker.classList.toggle('open', chosenMode === 'random');
+
+  if (chosenMode !== 'lecture') {
+    chosenLec = null;
+    document.querySelectorAll('.lec-item').forEach(b=>b.classList.remove('sel'));
+  }
+  updateStartBtn();
+}
+
+function onSlider(input) {
+  chosenCount = parseInt(input.value);
+  document.getElementById('count-display').textContent = chosenCount;
+  // update gradient fill
+  const pct = (chosenCount - 1) / (ALL.length - 1) * 100;
+  input.style.setProperty('--fill', pct + '%');
+  // sync hint on mode button
+  const h = document.getElementById('random-hint');
+  if (h) h.textContent = chosenCount >= ALL.length ? 'все карточки' : chosenCount + ' карточек';
+}
+
+// init slider gradient on page load
+window.addEventListener('DOMContentLoaded', ()=>{
+  const r = document.getElementById('count-range');
+  if (r) { r.style.setProperty('--fill', '100%'); }
+});
+
+function selectLec(btn, lec) {
+  document.querySelectorAll('.lec-item').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  chosenLec = lec;
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  const sb = document.getElementById('start-btn');
+  if (chosenMode === 'lecture' && !chosenLec) {
+    sb.disabled = true;
+    sb.textContent = 'Выберите лекцию →';
+  } else {
+    sb.disabled = false;
+    sb.textContent = 'Начать →';
+  }
+}
+
+function startSession() {
+  const rawName = document.getElementById('wname').value.trim();
+  const name = rawName || 'Студент';
+
+  // Build deck
+  if (chosenMode === 'ordered') {
+    cards = [...ALL];
+  } else if (chosenMode === 'random') {
+    cards = [...ALL];
+    shuffleArr(cards);
+    cards = cards.slice(0, chosenCount);
+  } else {
+    cards = ALL.filter(c=>c.lec===chosenLec);
+  }
+  idx = 0; revealed = false;
+  answers = new Array(cards.length).fill(null);
+
+  // Track visit (device info + async location)
+  const devInfo = getDeviceInfo();
+  getLocation().then(loc => {
+    sbInsert('visits', {
+      name:       name,
+      mode:       chosenMode,
+      lecture:    chosenLec || null,
+      card_count: cards.length,
+      ...devInfo,
+      ...loc
+    });
+  });
+
+  // Greeting
+  document.getElementById('app-greeting').textContent = 'Удачи, ' + name + '!';
+  document.getElementById('app-eyebrow').textContent =
+    chosenMode === 'lecture' ? chosenLec
+    : chosenMode === 'random' ? `Случайные · ${cards.length} карточек`
+    : 'Все лекции по порядку';
+
+  // Transition
+  const welcome = document.getElementById('welcome');
+  welcome.style.transition = 'opacity .35s ease, transform .35s ease';
+  welcome.style.opacity = '0';
+  welcome.style.transform = 'scale(0.97)';
+  setTimeout(() => {
+    welcome.style.display = 'none';
+    const app = document.getElementById('app');
+    app.classList.add('visible');
+    app.style.opacity = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      app.style.transition = 'opacity .4s ease';
+      app.style.opacity = '1';
+      // set progress label from chosen mode
+      const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.')
+        : chosenMode==='random' ? 'Случайные' : 'Все лекции';
+      document.getElementById('plec').textContent = modeLabel;
+      render();
+    }));
+  }, 350);
+}
+
+function goBack() {
+  const app = document.getElementById('app');
+  const res = document.getElementById('results');
+  // hide whichever is showing
+  [app, res].forEach(el=>{
+    el.style.transition = 'opacity .25s ease';
+    el.style.opacity = '0';
+  });
+  setTimeout(()=>{
+    app.classList.remove('visible');
+    res.classList.remove('visible');
+    [app, res].forEach(el=>{ el.style.opacity=''; el.style.transition=''; });
+    app.style.opacity = '';
+    app.style.transition = '';
+    const w = document.getElementById('welcome');
+    w.style.display = 'flex';
+    w.style.opacity = '0';
+    w.style.transform = 'scale(0.97)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      w.style.transition = 'opacity .35s ease, transform .35s ease';
+      w.style.opacity = '1';
+      w.style.transform = 'scale(1)';
+    }));
+  }, 250);
+}
+
+/* ================================================================
+   RENDER
+================================================================ */
+let cards = [...ALL], idx = 0, revealed = false, busy = false;
+let answers = []; // 'known' | 'unknown' | null  — per card in current deck
+
+/* ================================================================
+   RENDER
+================================================================ */
+function render() {
+  const c = cards[idx];
+  document.getElementById('fc-lec').textContent = c.lec;
+  document.getElementById('fc-q').innerHTML     = c.q;
+  document.getElementById('bc-lec').textContent = c.lec;
+  document.getElementById('bc-a').innerHTML     = c.a;
+
+  const card = document.getElementById('card');
+  card.classList.toggle('flipped', revealed);
+
+  // progress bar
+  const answered = answers.filter(a=>a!==null).length;
+  const pct = answered / cards.length * 100;
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('pnum').textContent  = (idx+1) + ' / ' + cards.length;
+
+  // stat counters
+  const nK = answers.filter(a=>a==='known').length;
+  const nU = answers.filter(a=>a==='unknown').length;
+  document.getElementById('stat-k').textContent = '✓ ' + nK;
+  document.getElementById('stat-u').textContent = '✗ ' + nU;
+
+  // verdict buttons: show only when answer is revealed
+  const vw = document.getElementById('verdict-wrap');
+  vw.classList.toggle('show', revealed);
+
+  // highlight current answer if already picked
+  const cur = answers[idx];
+  document.getElementById('v-yes').classList.toggle('picked', cur==='known');
+  document.getElementById('v-no').classList.toggle('picked',  cur==='unknown');
+
+  document.getElementById('btn-prev').disabled = idx===0;
+  document.getElementById('btn-next').disabled = idx===cards.length-1;
+
+  if (window.MathJax) MathJax.typesetPromise([card]);
+}
+
+/* ================================================================
+   FLIP
+================================================================ */
+function flipAnim(callback) {
+  if (busy) return;
+  busy = true;
+  const card = document.getElementById('card');
+  card.style.transition = 'transform .15s ease-in';
+  card.style.transform  = 'perspective(900px) rotateY(90deg)';
+  setTimeout(()=>{
+    callback();
+    card.style.transition = 'none';
+    card.style.transform  = 'perspective(900px) rotateY(-90deg)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      card.style.transition = 'transform .15s ease-out';
+      card.style.transform  = 'perspective(900px) rotateY(0deg)';
+      setTimeout(()=>{
+        card.style.transition = 'none';
+        card.style.transform  = '';
+        busy = false;
+      }, 155);
+    }));
+  }, 150);
+}
+
+function onCardClick() {
+  flipAnim(()=>{
+    revealed = !revealed;
+    const card = document.getElementById('card');
+    card.classList.toggle('flipped', revealed);
+    // show/hide verdict wrap
+    document.getElementById('verdict-wrap').classList.toggle('show', revealed);
+    // highlight existing answer
+    const cur = answers[idx];
+    document.getElementById('v-yes').classList.toggle('picked', cur==='known');
+    document.getElementById('v-no').classList.toggle('picked',  cur==='unknown');
+    if (revealed && window.MathJax)
+      MathJax.typesetPromise([document.getElementById('bc-a')]);
+  });
+}
+
+/* ================================================================
+   VERDICT — Знаю / Не знаю
+================================================================ */
+function verdict(type) {
+  answers[idx] = type;
+
+  // visual feedback on button
+  document.getElementById('v-yes').classList.toggle('picked', type==='known');
+  document.getElementById('v-no').classList.toggle('picked',  type==='unknown');
+
+  // update counters immediately
+  const nK = answers.filter(a=>a==='known').length;
+  const nU = answers.filter(a=>a==='unknown').length;
+  document.getElementById('stat-k').textContent = '✓ ' + nK;
+  document.getElementById('stat-u').textContent = '✗ ' + nU;
+
+  // update progress bar
+  const answered = answers.filter(a=>a!==null).length;
+  document.getElementById('pfill').style.width = (answered/cards.length*100) + '%';
+
+  // last card → show results after short pause
+  if (idx === cards.length - 1) {
+    setTimeout(showResults, 600);
+    return;
+  }
+
+  // auto-advance to next card after brief pause
+  setTimeout(()=>{ go(+1); }, 420);
+}
+
+/* ================================================================
+   RESULTS SCREEN
+================================================================ */
+function showResults() {
+  const nK = answers.filter(a=>a==='known').length;
+  const nU = answers.filter(a=>a==='unknown').length;
+  const total = cards.length;
+  const pct   = Math.round(nK / total * 100);
+  const name  = document.getElementById('app-greeting').textContent
+                  .replace('Удачи, ','').replace('!','').trim();
+
+  // Track result
+  sbInsert('results', {
+    name:      name || null,
+    mode:      chosenMode,
+    lecture:   chosenLec || null,
+    total:     total,
+    known:     nK,
+    unknown:   nU,
+    score_pct: pct
+  });
+
+  document.getElementById('res-k').textContent = nK;
+  document.getElementById('res-t').textContent = total;
+
+  // summary line
+  let msg = '';
+  if (pct === 100) msg = '<b>Отлично!</b> Все карточки знаешь.';
+  else if (pct >= 80) msg = `<b>Хорошо!</b> ${nU} карточек стоит повторить.`;
+  else if (pct >= 50) msg = `<b>Неплохо.</b> ${nU} карточек нужно доработать.`;
+  else msg = `<b>Нужно больше практики.</b> ${nU} карточек не знаешь.`;
+  document.getElementById('res-summary').innerHTML = msg;
+
+  // lecture breakdown
+  const byLec = {};
+  cards.forEach((c,i)=>{
+    if (!byLec[c.lec]) byLec[c.lec] = {k:0,u:0,n:0};
+    const a = answers[i];
+    if (a==='known')   byLec[c.lec].k++;
+    else if(a==='unknown') byLec[c.lec].u++;
+    else byLec[c.lec].n++;
+  });
+
+  const rows = document.getElementById('bd-rows');
+  rows.innerHTML = '';
+  Object.entries(byLec).forEach(([lec,stat])=>{
+    const t = stat.k + stat.u + stat.n;
+    if (t===0) return;
+    const kPct = t>0 ? Math.round(stat.k/t*100) : 0;
+    const short = lec.replace('Лекция ','Л.').replace(/\. .+/,'') + ' ' + lec.replace(/Лекция \d+\. /,'').substring(0,18);
+    const color = kPct===100 ? '#7ecb7e' : kPct>=60 ? 'var(--gold)' : '#e07878';
+    rows.innerHTML += `
+      <div class="bd-row">
+        <div class="bd-name" title="${lec}">${short}</div>
+        <div class="bd-bar"><div class="bd-fill" style="width:${kPct}%;background:${color}"></div></div>
+        <div class="bd-nums" style="color:${color}">${stat.k}/${t}</div>
+      </div>`;
+  });
+
+  // show/hide "Повторить слабые" button
+  const hasWeak = answers.some(a=>a==='unknown');
+  document.getElementById('btn-retry-weak').style.display = hasWeak ? '' : 'none';
+
+  // transition: hide app, show results
+  const app = document.getElementById('app');
+  app.style.transition = 'opacity .3s';
+  app.style.opacity = '0';
+  setTimeout(()=>{
+    app.classList.remove('visible');
+    app.style.opacity = '';
+    app.style.transition = '';
+    const res = document.getElementById('results');
+    res.classList.add('visible');
+    res.style.opacity = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      res.style.transition = 'opacity .4s';
+      res.style.opacity = '1';
+    }));
+  }, 300);
+}
+
+function retryWeak() {
+  const weakCards = cards.filter((_,i)=>answers[i]==='unknown');
+  _launchDeck(weakCards);
+}
+
+function retryAll() {
+  _launchDeck([...cards]);
+}
+
+function _launchDeck(deck) {
+  const res = document.getElementById('results');
+  res.style.transition = 'opacity .25s';
+  res.style.opacity = '0';
+  setTimeout(()=>{
+    res.classList.remove('visible');
+    res.style.opacity = '';
+    res.style.transition = '';
+    cards = deck;
+    answers = new Array(cards.length).fill(null);
+    idx = 0; revealed = false;
+    const app = document.getElementById('app');
+    app.classList.add('visible');
+    app.style.opacity = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      app.style.transition = 'opacity .35s';
+      app.style.opacity = '1';
+      render();
+    }));
+  }, 250);
+}
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+function slideAnim(dir, callback) {
+  if (busy) return;
+  busy = true;
+  const wrap = document.querySelector('.card-wrap');
+  // also slide verdict wrap
+  const vw = document.getElementById('verdict-wrap');
+  vw.classList.remove('show');
+
+  wrap.style.transition = 'transform .11s ease-in, opacity .11s ease-in';
+  wrap.style.transform  = dir>0 ? 'translateX(-20px)' : 'translateX(20px)';
+  wrap.style.opacity    = '0';
+  setTimeout(()=>{
+    callback();
+    wrap.style.transition = 'none';
+    wrap.style.transform  = dir>0 ? 'translateX(20px)' : 'translateX(-20px)';
+    wrap.style.opacity    = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      wrap.style.transition = 'transform .11s ease-out, opacity .11s ease-out';
+      wrap.style.transform  = 'translateX(0)';
+      wrap.style.opacity    = '1';
+      setTimeout(()=>{
+        wrap.style.transition = 'none';
+        wrap.style.transform  = '';
+        busy = false;
+      }, 115);
+    }));
+  }, 110);
+}
+
+function go(dir) {
+  const ni = idx+dir;
+  if (ni<0||ni>=cards.length) return;
+  slideAnim(dir, ()=>{ idx=ni; revealed=false; render(); });
+}
+
+function doShuffle() {
+  shuffleArr(cards);
+  answers = new Array(cards.length).fill(null);
+  idx=0; revealed=false; render();
+}
+
+function shuffleArr(arr) {
+  for (let i=arr.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', e=>{
+  if (e.key==='ArrowRight') go(+1);
+  else if (e.key==='ArrowLeft') go(-1);
+  else if (e.key===' ') { e.preventDefault(); onCardClick(); }
+  else if (e.key==='1'||e.key==='y'||e.key==='й') { if(revealed) verdict('known'); }
+  else if (e.key==='2'||e.key==='n'||e.key==='т') { if(revealed) verdict('unknown'); }
+});
+
+/* ── Enter to start ── */
+document.getElementById('wname').addEventListener('keydown', e=>{
+  if (e.key==='Enter') startSession();
+});
+
+/* ================================================================
+   PHASE 2 — localStorage
+================================================================ */
+const LS_KEY = 'matstat_v1';
+
+function saveProgress() {
+  if (!cards.length) return;
+  const data = {
+    name:        document.getElementById('app-greeting').textContent.replace('Удачи, ','').replace('!','').trim(),
+    eyebrow:     document.getElementById('app-eyebrow').textContent,
+    cardIndices: cards.map(c => ALL.findIndex(a => a.q === c.q)),
+    idx:         idx,
+    answers:     answers,
+    savedAt:     Date.now()
+  };
+  try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function clearSaved() {
+  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+}
+
+function checkResume() {
+  const data = loadSaved();
+  if (!data || !data.cardIndices || !data.cardIndices.length) return;
+
+  // how much was answered
+  const total   = data.cardIndices.length;
+  const nK      = data.answers.filter(a=>a==='known').length;
+  const nU      = data.answers.filter(a=>a==='unknown').length;
+  const nLeft   = total - data.answers.filter(a=>a!==null).length;
+  const cardNum = data.idx + 1;
+
+  // format date
+  const d = new Date(data.savedAt);
+  const dateStr = d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})
+                + ', ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('resume-title').textContent =
+    `Привет${data.name ? ', ' + data.name : ''}! Продолжить?`;
+
+  document.getElementById('resume-meta').innerHTML =
+    `<b>${data.eyebrow}</b><br>`+
+    `Карточка <b>${cardNum}</b> из <b>${total}</b> · `+
+    `<span class="rm-k">✓ ${nK}</span> · `+
+    `<span class="rm-u">✗ ${nU}</span> · `+
+    `осталось <b>${nLeft}</b><br>`+
+    `Сохранено: ${dateStr}`;
+
+  document.getElementById('resume-banner').classList.add('visible');
+}
+
+function dismissResume() {
+  document.getElementById('resume-banner').classList.remove('visible');
+  clearSaved();
+}
+
+function resumeSession() {
+  const data = loadSaved();
+  if (!data) return;
+
+  cards   = data.cardIndices.map(i => ALL[i]).filter(Boolean);
+  answers = data.answers.slice(0, cards.length);
+  // pad answers if lengths differ
+  while (answers.length < cards.length) answers.push(null);
+  idx      = Math.min(data.idx, cards.length - 1);
+  revealed = false;
+
+  document.getElementById('app-greeting').textContent = data.name ? 'Удачи, ' + data.name + '!' : '';
+  document.getElementById('app-eyebrow').textContent  = data.eyebrow || 'Мат. Статистика';
+  document.getElementById('plec').textContent         = data.eyebrow || '';
+
+  document.getElementById('resume-banner').classList.remove('visible');
+
+  const welcome = document.getElementById('welcome');
+  welcome.style.transition = 'opacity .3s ease';
+  welcome.style.opacity    = '0';
+  setTimeout(()=>{
+    welcome.style.display = 'none';
+    const app = document.getElementById('app');
+    app.classList.add('visible');
+    app.style.opacity = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      app.style.transition = 'opacity .4s ease';
+      app.style.opacity    = '1';
+      render();
+    }));
+  }, 300);
+}
+
+// save on every verdict
+const _origVerdict = verdict;
+window.verdict = function(type) {
+  _origVerdict(type);
+  // save after state update (next tick)
+  setTimeout(saveProgress, 50);
+};
+
+// clear saved when results screen is shown
+const _origShowResults = showResults;
+window.showResults = function() {
+  clearSaved();
+  _origShowResults();
+};
+
+// init: check for saved progress on page load
+checkResume();
+
+/* ================================================================
+   PHASE 3 — Touch swipes
+================================================================ */
+(function(){
+  const cardEl = document.getElementById('card');
+  let tx = 0, ty = 0, swiping = false;
+
+  cardEl.addEventListener('touchstart', e=>{
+    tx = e.touches[0].clientX;
+    ty = e.touches[0].clientY;
+    swiping = true;
+  }, {passive:true});
+
+  cardEl.addEventListener('touchmove', e=>{
+    if (!swiping) return;
+    const dx = e.touches[0].clientX - tx;
+    const dy = e.touches[0].clientY - ty;
+    // if clearly horizontal swipe, prevent page scroll
+    if (Math.abs(dx) > Math.abs(dy) + 10) e.preventDefault();
+  }, {passive:false});
+
+  cardEl.addEventListener('touchend', e=>{
+    if (!swiping) return;
+    swiping = false;
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+
+    if (adx > 52 && adx > ady * 1.4) {
+      // horizontal swipe → navigate
+      if (dx < 0) go(+1);
+      else         go(-1);
+    } else if (dy < -44 && ady > adx * 1.4) {
+      // swipe up → flip card
+      onCardClick();
+    }
+    // tap (small movement) is handled by onclick on the card
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>
