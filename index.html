@@ -512,6 +512,116 @@ h1 em { font-style:italic; color:var(--gold); }
 .rb-secondary:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
 .rb-ghost { background:transparent; color:var(--txt-dim); border-color:rgba(200,164,74,.15); font-size:.62rem; }
 .rb-ghost:hover { color:var(--txt); border-color:var(--bdr); }
+
+/* ══════════════════════════════════════════
+   STUDY + QUIZ SCREENS
+══════════════════════════════════════════ */
+.mode-grid { grid-template-columns:repeat(2,1fr) !important; }
+
+/* ── STUDY SCREEN ── */
+#study-screen {
+  display:none; flex-direction:column; align-items:center;
+  width:100%; padding:34px 20px 64px; min-height:100vh;
+}
+#study-screen.visible { display:flex; }
+.study-defs { width:100%; max-width:680px; margin-top:4px; }
+.sdef {
+  background:var(--bg2); border:1px solid var(--bdr);
+  border-radius:6px; padding:20px 26px; margin-bottom:10px;
+}
+.sdef-num {
+  font-family:'IBM Plex Mono',monospace; font-size:.57rem;
+  letter-spacing:.18em; color:var(--gold); opacity:.5;
+  margin-bottom:8px; text-transform:uppercase;
+}
+.sdef-q {
+  font-family:'Cormorant Garamond',serif; font-size:1.1rem;
+  font-weight:600; color:var(--parch); margin-bottom:12px; line-height:1.42;
+}
+.sdef-a { font-size:.92rem; line-height:1.78; color:var(--txt); }
+.sdef-a b { color:var(--gold-lt); }
+.sdef-a mjx-container { color:var(--parch) !important; }
+.study-actions {
+  width:100%; max-width:680px;
+  display:flex; gap:10px; margin-top:28px; flex-wrap:wrap; justify-content:center;
+}
+
+/* ── QUIZ SCREEN ── */
+#quiz-screen {
+  display:none; flex-direction:column; align-items:center;
+  width:100%; padding:34px 20px 64px;
+}
+#quiz-screen.visible { display:flex; }
+.quiz-prog-wrap { width:100%; max-width:680px; margin-bottom:20px; }
+.quiz-prog-meta { display:flex; justify-content:space-between; margin-top:6px; }
+.quiz-prog-meta span {
+  font-family:'IBM Plex Mono',monospace; font-size:.61rem;
+  letter-spacing:.12em; color:var(--txt-dim);
+}
+.qcard {
+  width:100%; max-width:680px;
+  background:var(--parch); border-radius:6px; padding:28px 34px 24px;
+  margin-bottom:18px;
+  box-shadow:0 12px 50px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.9) inset;
+}
+.qcard-label {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink-lt);
+  margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.qcard-label::after { content:''; flex:1; height:1px; background:rgba(92,68,40,.2); }
+.qcard-q {
+  font-family:'Cormorant Garamond',serif; font-size:1.38rem;
+  font-weight:600; color:var(--ink); line-height:1.52;
+}
+.quiz-opts {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  width:100%; max-width:680px;
+}
+.qopt {
+  border:1px solid var(--bdr); background:var(--bg2);
+  border-radius:5px; padding:14px 16px; cursor:pointer;
+  font-size:.88rem; color:var(--txt); text-align:left;
+  line-height:1.45; transition:all .15s;
+  display:flex; gap:10px; align-items:flex-start;
+}
+.qopt-ltr {
+  font-family:'IBM Plex Mono',monospace; font-size:.68rem;
+  font-weight:500; color:var(--gold); opacity:.55;
+  flex-shrink:0; padding-top:1px;
+}
+.qopt:hover:not([disabled]) { border-color:var(--gold); color:var(--parch); background:var(--gold-dim); }
+.qopt[disabled] { cursor:default; }
+.qopt.q-correct { background:rgba(100,195,100,.15); border-color:#7ecb7e !important; color:#7ecb7e; }
+.qopt.q-correct .qopt-ltr { color:#7ecb7e; opacity:1; }
+.qopt.q-wrong   { background:rgba(220,90,90,.15);  border-color:#e07878 !important; color:#e07878; }
+.qopt.q-wrong   .qopt-ltr  { color:#e07878; opacity:1; }
+.qopt.q-reveal  { background:rgba(100,195,100,.08); border-color:rgba(100,195,100,.3) !important; color:rgba(120,210,120,.8); }
+.qopt.q-reveal  .qopt-ltr  { color:rgba(120,210,120,.8); opacity:1; }
+
+/* ── QUIZ RESULTS ── */
+#quiz-results-screen {
+  display:none; flex-direction:column; align-items:center;
+  width:100%; padding:48px 20px 64px; min-height:100vh;
+}
+#quiz-results-screen.visible { display:flex; }
+.qr-wrong-title {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.6; margin-bottom:14px;
+  width:100%; max-width:560px;
+}
+.qr-wrong-item {
+  width:100%; max-width:560px; background:var(--bg2);
+  border:1px solid rgba(220,90,90,.25); border-radius:5px;
+  padding:14px 18px; margin-bottom:8px;
+}
+.qr-wrong-q {
+  font-family:'Cormorant Garamond',serif; font-size:1rem;
+  font-weight:600; color:var(--parch); margin-bottom:6px; line-height:1.4;
+}
+.qr-wrong-correct { color:#7ecb7e; font-size:.86rem; line-height:1.6; margin-bottom:3px; }
+.qr-wrong-your    { color:#e07878; font-size:.82rem; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -561,6 +671,11 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mico">📖</span>
         <span class="mname">Лекция</span>
         <span class="mhint">выбрать одну</span>
+      </button>
+      <button class="mode-btn" data-mode="study" onclick="setMode(this)">
+        <span class="mico">🎓</span>
+        <span class="mname">Учить</span>
+        <span class="mhint">конспект + тест</span>
       </button>
     </div>
   </div>
@@ -655,6 +770,7 @@ h1 em { font-style:italic; color:var(--gold); }
   <div class="res-actions">
     <button class="res-btn rb-primary"   id="btn-retry-weak" onclick="retryWeak()">↺ Повторить слабые</button>
     <button class="res-btn rb-secondary" onclick="retryAll()">↺ Начать заново</button>
+    <button class="res-btn rb-secondary" id="btn-back-study" onclick="backToStudy()" style="display:none">📖 К конспекту</button>
     <button class="res-btn rb-ghost"     onclick="goBack()">↩ Изменить режим</button>
   </div>
 </div>
@@ -1055,6 +1171,273 @@ window.addEventListener('DOMContentLoaded', ()=>{
   if (r) { r.style.setProperty('--fill', '100%'); }
 });
 
+/* ================================================================
+   STUDY + QUIZ MODE
+================================================================ */
+let studyLec    = null;
+let quizCards   = [];
+let quizIdx     = 0;
+let quizAnswers = []; // {correct:bool, chosenLabel, correctLabel}
+
+// ── helpers ──────────────────────────────────────────────────────
+function getCardLabel(card) {
+  const m = card.q.match(/<em>([\s\S]*?)<\/em>/);
+  if (m) return m[1].replace(/<[^>]+>/g, '').trim();
+  // fallback: clean question text
+  return card.q
+    .replace(/<[^>]+>/g, '')
+    .replace(/^(Дайте определение|Что называется|Каковы|Запишите|В чём (заключается|суть)|Как найти|Назовите|Перечислите|Сформулируйте|Опишите|Статистика|Какая|Какое|Какие)\s*/i, '')
+    .replace(/[?.!]+$/, '')
+    .trim()
+    .substring(0, 55);
+}
+
+function answerPreview(html) {
+  let t = html
+    .replace(/\$\$[\s\S]*?\$\$/g, '(формула)')
+    .replace(/\$[^$\n]+\$/g, '(формула)')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<b>([\s\S]*?)<\/b>/gi, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return t.length > 110 ? t.substring(0, 107) + '…' : t;
+}
+
+function allScreensOff() {
+  ['welcome','app','results','study-screen','quiz-screen','quiz-results-screen']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('visible');
+      if (id === 'welcome') el.style.display = 'none';
+      el.style.opacity = '';
+      el.style.transition = '';
+    });
+}
+
+function fadeIn(id) {
+  const el = document.getElementById(id);
+  el.classList.add('visible');
+  el.style.opacity = '0';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.style.transition = 'opacity .35s ease';
+    el.style.opacity = '1';
+    setTimeout(()=>{ el.style.transition=''; }, 360);
+  }));
+}
+
+function fadeOut(id, cb) {
+  const el = document.getElementById(id);
+  el.style.transition = 'opacity .25s ease';
+  el.style.opacity = '0';
+  setTimeout(()=>{
+    el.classList.remove('visible');
+    el.style.opacity = '';
+    el.style.transition = '';
+    if (cb) cb();
+  }, 250);
+}
+
+// ── STUDY SCREEN ──────────────────────────────────────────────────
+function showStudyScreen(lec) {
+  studyLec = lec;
+  const lecCards = ALL.filter(c => c.lec === lec);
+
+  document.getElementById('study-eyebrow').textContent = lec;
+  document.getElementById('study-subtitle').textContent =
+    lecCards.length + ' определений · нажми «Начать тест» когда будешь готов';
+
+  const wrap = document.getElementById('study-defs');
+  wrap.innerHTML = lecCards.map((c, i) => `
+    <div class="sdef">
+      <div class="sdef-num">Опр. ${String(i+1).padStart(2,'0')}</div>
+      <div class="sdef-q">${c.q.replace(/<em>/g,'').replace(/<\/em>/g,'')}</div>
+      <div class="sdef-a">${c.a}</div>
+    </div>`).join('');
+
+  allScreensOff();
+  document.getElementById('welcome').style.display = 'none';
+  fadeIn('study-screen');
+  // render math
+  setTimeout(()=>{
+    if (window.MathJax) MathJax.typesetPromise([document.getElementById('study-defs')]);
+  }, 100);
+  // scroll to top
+  window.scrollTo(0, 0);
+}
+
+// ── QUIZ — обычные карточки по лекции ────────────────────────────
+function startQuizFromStudy() {
+  cards   = ALL.filter(c => c.lec === studyLec);
+  answers = new Array(cards.length).fill(null);
+  idx     = 0;
+  revealed = false;
+
+  document.getElementById('app-eyebrow').textContent  = 'Тест · ' + studyLec.replace('Лекция ','Л.');
+  document.getElementById('app-greeting').textContent = '';
+  document.getElementById('plec').textContent         = studyLec;
+
+  allScreensOff();
+  fadeIn('app');
+  window.scrollTo(0, 0);
+  render();
+}
+
+function renderQuizQ() {
+  const c    = quizCards[quizIdx];
+  const total = quizCards.length;
+
+  // progress
+  document.getElementById('quiz-pfill').style.width = ((quizIdx)/total*100)+'%';
+  document.getElementById('quiz-pnum').textContent  = (quizIdx+1)+' / '+total;
+  document.getElementById('quiz-lec-tag').textContent = c.lec;
+
+  // question
+  document.getElementById('quiz-q').innerHTML = c.q;
+  if (window.MathJax) MathJax.typesetPromise([document.getElementById('quiz-q')]);
+
+  // build 4 options: 1 correct + 3 distractors from same lecture
+  const correctLabel = getCardLabel(c);
+  const pool = ALL.filter(x => x !== c && x.lec === c.lec);
+  // if same lecture has fewer than 3 others, pull from all cards
+  const extra = ALL.filter(x => x !== c && x.lec !== c.lec);
+  while (pool.length < 3) pool.push(extra[Math.floor(Math.random()*extra.length)]);
+  shuffleArr(pool);
+  const distractors = pool.slice(0,3).map(getCardLabel);
+
+  const opts = [correctLabel, ...distractors];
+  shuffleArr(opts);
+  const correctIdx = opts.indexOf(correctLabel);
+
+  const LETTERS = ['A','B','C','D'];
+  const wrap = document.getElementById('quiz-opts');
+  wrap.innerHTML = opts.map((label, i) => `
+    <button class="qopt" onclick="selectQuizAnswer(this,${i},${correctIdx})">
+      <span class="qopt-ltr">${LETTERS[i]}</span>
+      <span>${label}</span>
+    </button>`).join('');
+}
+
+function selectQuizAnswer(btn, selectedIdx, correctIdx) {
+  // disable all
+  document.querySelectorAll('.qopt').forEach(b => b.setAttribute('disabled',''));
+
+  const opts = document.querySelectorAll('.qopt');
+  const isCorrect = selectedIdx === correctIdx;
+
+  btn.classList.add(isCorrect ? 'q-correct' : 'q-wrong');
+  if (!isCorrect) opts[correctIdx].classList.add('q-reveal');
+
+  // record
+  const labels = [...opts].map(b => b.querySelector('span:last-child').textContent);
+  quizAnswers.push({
+    correct:      isCorrect,
+    question:     quizCards[quizIdx].q,
+    chosenLabel:  labels[selectedIdx],
+    correctLabel: labels[correctIdx]
+  });
+
+  setTimeout(()=>{
+    quizIdx++;
+    if (quizIdx >= quizCards.length) {
+      showQuizResults();
+    } else {
+      renderQuizQ();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  }, isCorrect ? 700 : 1400);
+}
+
+function showQuizResults() {
+  const total   = quizAnswers.length;
+  const correct = quizAnswers.filter(a=>a.correct).length;
+  const pct     = Math.round(correct/total*100);
+
+  document.getElementById('qr-k').textContent = correct;
+  document.getElementById('qr-t').textContent = total;
+
+  let msg = '';
+  if (pct===100) msg = '<b>Идеально!</b> Все вопросы правильно 🎉';
+  else if (pct>=80) msg = `<b>Отлично!</b> Почти всё знаешь.`;
+  else if (pct>=60) msg = `<b>Хорошо.</b> Есть что повторить.`;
+  else if (pct>=40) msg = `<b>Неплохо,</b> но лекцию стоит перечитать.`;
+  else              msg = `<b>Нужно повторить</b> — вернись к конспекту.`;
+  document.getElementById('qr-summary').innerHTML = msg;
+
+  // wrong answers list
+  const wrong = quizAnswers.filter(a=>!a.correct);
+  const wrap  = document.getElementById('qr-wrong-wrap');
+  if (wrong.length === 0) {
+    wrap.innerHTML = '';
+  } else {
+    wrap.innerHTML = `<div class="qr-wrong-title">Ошибки (${wrong.length})</div>` +
+      wrong.map(a => `
+        <div class="qr-wrong-item">
+          <div class="qr-wrong-q">${a.question.replace(/<[^>]+>/g,'')}</div>
+          <div class="qr-wrong-correct">✓ ${a.correctLabel}</div>
+          <div class="qr-wrong-your">✗ Ты ответил: ${a.chosenLabel}</div>
+        </div>`).join('');
+  }
+
+  // track to supabase
+  const name = document.getElementById('app-greeting').textContent.replace('Удачи, ','').replace('!','').trim();
+  sbInsert('results', { name: name||null, mode:'study_quiz', lecture:studyLec, total, known:correct, unknown:total-correct, score_pct:pct });
+
+  allScreensOff();
+  fadeIn('quiz-results-screen');
+  window.scrollTo(0,0);
+}
+
+function retryQuiz() {
+  startQuizFromStudy();
+}
+
+function backToStudy() {
+  if (studyLec) showStudyScreen(studyLec);
+  else goBack();
+}
+
+function confirmQuitQuiz() {
+  if (studyLec) showStudyScreen(studyLec);
+  else goBack();
+}
+
+// ── patch setMode to handle 'study' ──────────────────────────────
+const _origSetMode = setMode;
+window.setMode = function(btn) {
+  _origSetMode(btn);
+  // 'study' needs lecture picker, no count picker
+  if (btn.dataset.mode === 'study') {
+    document.getElementById('count-picker').classList.remove('open');
+    document.getElementById('lec-picker').classList.add('open');
+  }
+};
+
+// ── patch startSession to handle 'study' mode ────────────────────
+const _origStartSession = startSession;
+window.startSession = function() {
+  if (chosenMode === 'study') {
+    if (!chosenLec) return;
+    // hide welcome
+    const w = document.getElementById('welcome');
+    w.style.transition = 'opacity .3s'; w.style.opacity = '0';
+    setTimeout(()=>{ w.style.display='none'; showStudyScreen(chosenLec); }, 300);
+    return;
+  }
+  _origStartSession();
+};
+
+// ── patch goBack to hide study/quiz screens too ───────────────────
+const _origGoBack = goBack;
+window.goBack = function() {
+  ['study-screen','quiz-screen','quiz-results-screen'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('visible'); el.style.opacity=''; el.style.transition=''; }
+  });
+  _origGoBack();
+};
+
 function selectLec(btn, lec) {
   document.querySelectorAll('.lec-item').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
@@ -1334,9 +1717,10 @@ function showResults() {
       </div>`;
   });
 
-  // show/hide "Повторить слабые" button
+  // show/hide buttons
   const hasWeak = answers.some(a=>a==='unknown');
-  document.getElementById('btn-retry-weak').style.display = hasWeak ? '' : 'none';
+  document.getElementById('btn-retry-weak').style.display  = hasWeak ? '' : 'none';
+  document.getElementById('btn-back-study').style.display  = studyLec ? '' : 'none';
 
   // transition: hide app, show results
   const app = document.getElementById('app');
@@ -1608,5 +1992,66 @@ checkResume();
   }, {passive:true});
 })();
 </script>
+
+<!-- ══════════════════════════════════════
+     STUDY SCREEN
+══════════════════════════════════════ -->
+<div id="study-screen">
+  <header>
+    <div class="eyebrow" id="study-eyebrow">Конспект</div>
+    <h1>Математическая <em>Статистика</em></h1>
+    <div class="greeting" id="study-subtitle"></div>
+  </header>
+  <div class="rule"></div>
+  <div class="study-defs" id="study-defs"></div>
+  <div class="study-actions">
+    <button class="res-btn rb-primary" onclick="startQuizFromStudy()">📝 Начать тест →</button>
+    <button class="res-btn rb-secondary" onclick="goBack()">↩ Изменить режим</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     QUIZ SCREEN
+══════════════════════════════════════ -->
+<div id="quiz-screen">
+  <header>
+    <div class="eyebrow" id="quiz-eyebrow">Тест</div>
+    <h1>Математическая <em>Статистика</em></h1>
+  </header>
+  <div class="rule"></div>
+  <div class="quiz-prog-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="quiz-pfill"></div></div>
+    <div class="quiz-prog-meta">
+      <span id="quiz-plec"></span>
+      <span id="quiz-pnum">1 / 10</span>
+    </div>
+  </div>
+  <div class="qcard">
+    <div class="qcard-label" id="quiz-lec-tag"></div>
+    <div class="qcard-q" id="quiz-q"></div>
+  </div>
+  <div class="quiz-opts" id="quiz-opts"></div>
+  <div style="margin-top:18px;">
+    <button class="back-link" onclick="confirmQuitQuiz()">↩ выйти из теста</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     QUIZ RESULTS SCREEN
+══════════════════════════════════════ -->
+<div id="quiz-results-screen">
+  <div class="res-eye">Результаты теста</div>
+  <div class="res-score"><em id="qr-k">0</em> / <span id="qr-t">0</span></div>
+  <div class="res-sub">правильных ответов</div>
+  <div class="res-rule"></div>
+  <div class="res-summary" id="qr-summary"></div>
+  <div id="qr-wrong-wrap"></div>
+  <div class="res-actions" style="margin-top:28px;">
+    <button class="res-btn rb-primary"    onclick="retryQuiz()">↺ Пройти тест снова</button>
+    <button class="res-btn rb-secondary"  onclick="backToStudy()">📖 Вернуться к конспекту</button>
+    <button class="res-btn rb-ghost"      onclick="goBack()">↩ Изменить режим</button>
+  </div>
+</div>
+
 </body>
 </html>
