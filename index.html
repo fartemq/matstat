@@ -94,6 +94,19 @@ body {
 }
 .w-input:focus { border-color:var(--gold); }
 .w-input::placeholder { color:var(--txt-dim); font-style:italic; }
+.w-input.error { border-color:#e07878; animation: shake .35s ease; }
+.w-error-msg {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.1em; color:#e07878; margin-top:7px; display:none;
+}
+.w-error-msg.visible { display:block; }
+@keyframes shake {
+  0%,100%{ transform:translateX(0); }
+  20%    { transform:translateX(-7px); }
+  40%    { transform:translateX(7px); }
+  60%    { transform:translateX(-5px); }
+  80%    { transform:translateX(4px); }
+}
 
 /* mode selection */
 .mode-grid {
@@ -514,6 +527,119 @@ h1 em { font-style:italic; color:var(--gold); }
 .rb-ghost:hover { color:var(--txt); border-color:var(--bdr); }
 
 /* ══════════════════════════════════════════
+   SPLASH / COUNTDOWN
+══════════════════════════════════════════ */
+#splash {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100vh; width:100%; padding:40px 20px;
+  text-align:center;
+}
+.sp-eyebrow {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.38em; color:var(--gold); text-transform:uppercase;
+  opacity:.6; margin-bottom:12px;
+}
+.sp-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.8rem,4vw,2.8rem); font-weight:600;
+  color:var(--parch); line-height:1.05; margin-bottom:10px;
+}
+.sp-title em { font-style:italic; color:var(--gold); }
+.sp-rule {
+  width:70px; height:1px; margin:20px auto 28px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.sp-label {
+  font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+  letter-spacing:.25em; text-transform:uppercase; color:var(--txt-dim);
+  margin-bottom:20px;
+}
+/* countdown blocks */
+.countdown {
+  display:flex; align-items:flex-start; gap:6px; margin-bottom:24px;
+}
+.cd-block {
+  display:flex; flex-direction:column; align-items:center;
+  background:var(--bg2); border:1px solid var(--bdr);
+  border-radius:6px; padding:14px 18px; min-width:72px;
+}
+.cd-block span {
+  font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,5vw,3.2rem);
+  font-weight:700; color:var(--parch); line-height:1;
+}
+.cd-block small {
+  font-family:'IBM Plex Mono',monospace; font-size:.56rem;
+  letter-spacing:.14em; color:var(--txt-dim); text-transform:uppercase;
+  margin-top:6px;
+}
+.cd-sep {
+  font-family:'Cormorant Garamond',serif; font-size:2.4rem; color:var(--gold);
+  opacity:.5; padding-top:10px; align-self:flex-start;
+}
+.sp-exam-date {
+  font-family:'IBM Plex Mono',monospace; font-size:.65rem;
+  letter-spacing:.12em; color:var(--gold); opacity:.7; margin-bottom:32px;
+}
+.sp-done {
+  font-family:'Cormorant Garamond',serif; font-size:1.8rem;
+  font-weight:600; color:var(--gold); margin-bottom:20px;
+}
+.sp-btn {
+  font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+  letter-spacing:.2em; text-transform:uppercase;
+  padding:13px 48px; background:var(--gold); color:var(--ink);
+  border:none; border-radius:3px; cursor:pointer; font-weight:500;
+  transition:all .2s;
+}
+.sp-btn:hover { background:var(--gold-lt); transform:translateY(-2px); }
+
+/* ══════════════════════════════════════════
+   БОНУСНЫЙ ТЕСТ BUTTON (в mode-grid, span 2)
+══════════════════════════════════════════ */
+.mode-btn-bonus {
+  grid-column: span 2;
+  border:1px solid rgba(200,164,74,.5) !important;
+  background:rgba(200,164,74,.06) !important;
+  display:flex !important; align-items:center; gap:14px;
+  text-align:left !important;
+}
+.mode-btn-bonus:hover { background:rgba(200,164,74,.15) !important; border-color:var(--gold) !important; }
+.mode-btn-bonus .mico { font-size:1.4rem; flex-shrink:0; }
+.mode-btn-bonus .mname { color:var(--gold-lt) !important; font-size:1.05rem !important; }
+.mode-btn-bonus .mhint { color:var(--txt-dim); }
+
+/* ══════════════════════════════════════════
+   REACTION OVERLAY (бонусный тест)
+══════════════════════════════════════════ */
+#reaction-overlay {
+  position:fixed; inset:0; z-index:999;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none; opacity:0;
+  transition:opacity .2s;
+}
+#reaction-overlay.show { opacity:1; }
+.reaction-bubble {
+  padding:28px 44px; border-radius:12px; text-align:center;
+  box-shadow:0 16px 60px rgba(0,0,0,.7);
+  transform:scale(0.85);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+#reaction-overlay.show .reaction-bubble { transform:scale(1); }
+.reaction-bubble.good {
+  background:#1a2e1a; border:1px solid #7ecb7e;
+}
+.reaction-bubble.bad {
+  background:#2e1a1a; border:1px solid #e07878;
+}
+.reaction-emoji { font-size:2.8rem; margin-bottom:10px; display:block; }
+.reaction-text {
+  font-family:'Cormorant Garamond',serif; font-size:1.5rem;
+  font-weight:700; line-height:1.3;
+}
+.reaction-bubble.good .reaction-text { color:#7ecb7e; }
+.reaction-bubble.bad  .reaction-text { color:#e07878; }
+
+/* ══════════════════════════════════════════
    STUDY + QUIZ SCREENS
 ══════════════════════════════════════════ */
 .mode-grid { grid-template-columns:repeat(2,1fr) !important; }
@@ -627,9 +753,30 @@ h1 em { font-style:italic; color:var(--gold); }
 <body>
 
 <!-- ══════════════════════════════════════
+     SPLASH / COUNTDOWN
+══════════════════════════════════════ -->
+<div id="splash">
+  <div class="sp-eyebrow">ТГУ · Математическая статистика</div>
+  <div class="sp-title">До <em>экзамена</em> осталось</div>
+  <div class="sp-rule"></div>
+  <div class="sp-label" id="sp-label">считаем…</div>
+  <div class="countdown" id="countdown">
+    <div class="cd-block"><span id="cd-days">00</span><small>дней</small></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-block"><span id="cd-hours">00</span><small>часов</small></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-block"><span id="cd-mins">00</span><small>минут</small></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-block"><span id="cd-secs">00</span><small>секунд</small></div>
+  </div>
+  <div class="sp-exam-date">Экзамен: пятница, 22 мая 2026 в 10:20</div>
+  <button class="sp-btn" onclick="showWelcome()">К карточкам →</button>
+</div>
+
+<!-- ══════════════════════════════════════
      WELCOME SCREEN
 ══════════════════════════════════════ -->
-<div id="welcome">
+<div id="welcome" style="display:none">
   <!-- Resume banner (shown if saved progress exists) -->
   <div class="resume-banner" id="resume-banner">
     <div class="resume-top">
@@ -649,8 +796,9 @@ h1 em { font-style:italic; color:var(--gold); }
 
   <!-- Name -->
   <div class="w-section">
-    <label class="w-label" for="wname">Как вас зовут?</label>
+    <label class="w-label" for="wname">Как вас зовут? <span style="color:#e07878">*</span></label>
     <input class="w-input" id="wname" type="text" placeholder="Введите имя…" autocomplete="off" maxlength="40">
+    <div class="w-error-msg" id="name-error">Пожалуйста, введите имя</div>
   </div>
 
   <!-- Mode -->
@@ -660,7 +808,7 @@ h1 em { font-style:italic; color:var(--gold); }
       <button class="mode-btn active" data-mode="ordered" onclick="setMode(this)">
         <span class="mico">📋</span>
         <span class="mname">По порядку</span>
-        <span class="mhint">все 85 карточек</span>
+        <span class="mhint">все 80 карточек</span>
       </button>
       <button class="mode-btn" data-mode="random" onclick="setMode(this)">
         <span class="mico">🎲</span>
@@ -677,6 +825,13 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mname">Учить</span>
         <span class="mhint">конспект + тест</span>
       </button>
+      <button class="mode-btn mode-btn-bonus" onclick="startBonusTest()">
+        <span class="mico">🎰</span>
+        <div>
+          <span class="mname">Бонусный тест</span>
+          <span class="mhint">режим испытания нервов</span>
+        </div>
+      </button>
     </div>
   </div>
 
@@ -685,10 +840,10 @@ h1 em { font-style:italic; color:var(--gold); }
     <span class="count-label">Сколько карточек?</span>
     <div class="slider-row">
       <div class="count-value">
-        <span id="count-display">85</span>
+        <span id="count-display">80</span>
         <span>карточек</span>
       </div>
-      <input class="count-range" id="count-range" type="range" min="1" max="85" value="85" oninput="onSlider(this)">
+      <input class="count-range" id="count-range" type="range" min="1" max="80" value="80" oninput="onSlider(this)">
     </div>
     <div class="slider-bounds"><span>1</span><span>85</span></div>
   </div>
@@ -742,6 +897,11 @@ h1 em { font-style:italic; color:var(--gold); }
   <div class="verdict-wrap" id="verdict-wrap">
     <button class="v-btn v-yes" id="v-yes" onclick="verdict('known')">✓ &nbsp;Знаю</button>
     <button class="v-btn v-no"  id="v-no"  onclick="verdict('unknown')">✗ &nbsp;Не знаю</button>
+  </div>
+
+  <!-- Далее (только в бонусном режиме, после показа ответа) -->
+  <div id="bonus-next-wrap" style="display:none; width:100%; max-width:680px; margin-top:14px;">
+    <button class="start-btn" style="width:100%; margin-top:0;" onclick="bonusNext()">Далее →</button>
   </div>
 
   <div class="nav">
@@ -831,18 +991,25 @@ function getDeviceInfo() {
     device_type: deviceType,
     browser:     browser,
     os:          os,
-    language:    navigator.language || null,
-    timezone:    Intl.DateTimeFormat().resolvedOptions().timeZone || null,
     screen_w:    screen.width || null
   };
 }
 
 async function getLocation() {
+  let ip = null, country = null;
+  // надёжный источник IP
   try {
-    const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+    const r = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(4000) });
     const d = await r.json();
-    return { country: d.country_name || null, city: d.city || null };
-  } catch { return { country: null, city: null }; }
+    ip = d.ip || null;
+  } catch {}
+  // страна — отдельным запросом
+  try {
+    const r2 = await fetch('https://ipapi.co/country_name/', { signal: AbortSignal.timeout(4000) });
+    const text = await r2.text();
+    if (text && !text.includes('{')) country = text.trim();
+  } catch {}
+  return { ip, country };
 }
 
 /* ================================================================
@@ -913,7 +1080,7 @@ const ALL = [
  a:"Оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>несмещённой</b>, если её математическое ожидание равно оцениваемому параметру: $$M(\\tilde{\\theta}_n)=\\theta.$$ В противном случае оценка называется <b>смещённой</b>."},
 {lec:"Лекция 2. Оценка параметров",
  q:"Перечислите <em>примеры несмещённых оценок</em>.",
- a:"1) $\\bar{x}=\\dfrac{1}{n}\\sum x_i$ — несмещённая оценка математического ожидания;<br>2) $S^2=\\dfrac{1}{n{-}1}\\sum(x_i-\\bar{x})^2$ — несмещённая оценка дисперсии $\\sigma^2$;<br>3) $S=\\sqrt{S^2}$ — несмещённая оценка стандартного отклонения $\\sigma$."},
+ a:"1) выборочная средняя $$\\bar{x}=\\frac{1}{n}\\sum_{i=1}^{n}x_i$$ является несмещённой оценкой математического ожидания;<br>2) исправленная дисперсия $$S^2=\\frac{1}{n-1}\\sum_{i=1}^{n}(x_i-\\bar{x})^2$$ является несмещённой оценкой дисперсии $\\sigma^2$;<br>3) $S=\\sqrt{S^2}$ является несмещённой оценкой стандартного отклонения $\\sigma$."},
 {lec:"Лекция 2. Оценка параметров",
  q:"Что называется <em>состоятельной оценкой</em>?",
  a:"Оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>состоятельной</b>, если она удовлетворяет закону больших чисел: $$\\lim_{n\\to\\infty}P(|\\tilde{\\theta}_n-\\theta|<\\varepsilon)=1\\quad\\text{для любого }\\varepsilon>0.$$"},
@@ -922,10 +1089,10 @@ const ALL = [
  a:"Несмещённая оценка $\\tilde{\\theta}_n$ параметра $\\theta$ называется <b>эффективной</b>, если при заданном объёме выборки она имеет наименьшую дисперсию: $$D(\\tilde{\\theta}_n)=D_{\\min}.$$"},
 {lec:"Лекция 2. Оценка параметров",
  q:"Что называется <em>доверительной вероятностью</em> (надёжностью)?",
- a:"<b>Доверительной вероятностью</b>, или <b>надёжностью</b>, оценки $\\tilde{\\theta}_n$ параметра $\\theta$ называется вероятность $\\gamma$, с которой осуществляется неравенство $|\\tilde{\\theta}_n-\\theta|<\\varepsilon$: $$P(|\\tilde{\\theta}_n-\\theta|<\\varepsilon)=\\gamma.$$"},
+ a:"<b>Доверительной вероятностью</b>, или <b>надёжностью</b>, оценки $\\tilde{\\theta}_n$ параметра $\\theta$ называется вероятность $\\gamma$, с которой осуществляется неравенство $|\\tilde{\\theta}_n-\\theta|<\\Delta$, т.е. $$P\\{|\\tilde{\\theta}_n-\\theta|<\\Delta\\}=\\gamma.$$"},
 {lec:"Лекция 2. Оценка параметров",
  q:"Что называется <em>доверительным интервалом</em>?",
- a:"Интервал $(\\tilde{\\theta}_n-\\varepsilon,\\;\\tilde{\\theta}_n+\\varepsilon)$, который покрывает неизвестный параметр $\\theta$ с заданной надёжностью $\\gamma$, называется <b>доверительным интервалом</b>."},
+ a:"Интервал $(\\tilde{\\theta}_n-\\Delta,\\;\\tilde{\\theta}_n+\\Delta)$, который покрывает неизвестный параметр $\\theta$ с заданной надёжностью $\\gamma$, называется <b>доверительным интервалом</b>."},
 {lec:"Лекция 2. Оценка параметров",
  q:"Доверительный интервал для $M(X)$ при <em>известном</em> $\\sigma$.",
  a:"$$\\left(\\bar{x}-u_\\gamma\\frac{\\sigma}{\\sqrt{n}},\\;\\bar{x}+u_\\gamma\\frac{\\sigma}{\\sqrt{n}}\\right),$$ где $u_\\gamma$ определяется из уравнения $\\Phi(u_\\gamma)=\\dfrac{1+\\gamma}{2}$; $\\Phi(x)$ — функция нормированного нормального распределения."},
@@ -1046,13 +1213,13 @@ const ALL = [
  a:"$$r^*=\\frac{K^*_{xy}}{\\sigma^*_x\\cdot\\sigma^*_y},$$ где $\\sigma^*_x$, $\\sigma^*_y$ — выборочные СКО СВ $X$ и $Y$, называется <b>выборочным коэффициентом корреляции</b>."},
 {lec:"Лекция 9. Коэффициент корреляции",
  q:"Что называется <em>выборочным коэффициентом регрессии</em> $Y$ на $X$?",
- a:"Угловой коэффициент $k$ прямой регрессии $Y$ на $X$ называется <b>выборочным коэффициентом регрессии</b> $\beta^*_{yx}$. При этом: $$\\beta^*_{yx}=r^*\\frac{\\sigma^*_y}{\\sigma^*_x},\\quad \\beta^*_{xy}=r^*\\frac{\\sigma^*_x}{\\sigma^*_y}.$$"},
+ a:"Угловой коэффициент $k$ прямой линии регрессии $Y$ на $X$ называется <b>выборочным коэффициентом регрессии</b> $Y$ на $X$ и обозначается через $\\rho^*_{yx}$: $k=\\rho^*_{yx}$. При этом: $$\\rho^*_{yx}=r^*\\frac{\\sigma^*_y}{\\sigma^*_x},\\quad \\rho^*_{xy}=r^*\\frac{\\sigma^*_x}{\\sigma^*_y}.$$"},
 {lec:"Лекция 9. Коэффициент корреляции",
  q:"Выборочные линейные уравнения регрессии через <em>коэффициент корреляции</em>.",
  a:"а) $Y$ на $X$: $$\\bar{y}_x-\\bar{y}=r^*\\frac{\\sigma^*_y}{\\sigma^*_x}(x-\\bar{x}).$$ б) $X$ на $Y$: $$\\bar{x}_y-\\bar{x}=r^*\\frac{\\sigma^*_x}{\\sigma^*_y}(y-\\bar{y}).$$"},
 {lec:"Лекция 9. Коэффициент корреляции",
  q:"Каковы <em>свойства</em> выборочного коэффициента корреляции?",
- a:"1) $-1\\leq r^*\\leq 1$.<br>2) При $|r^*|=1$ — линейная функциональная зависимость, все точки на одной прямой.<br>3) При $r^*=0$ — линейная корреляционная связь отсутствует, линии регрессии параллельны осям координат."},
+ a:"1) $-1\\leq r^*\\leq 1$;<br>2) При $r^*=\\pm1$ корреляционная связь представляет линейную функциональную зависимость. При этом линии регрессии $Y$ на $X$ и $X$ на $Y$ совпадают, и все наблюдаемые значения $(x_1,y_1),(x_2,y_2),\\ldots,(x_n,y_n)$ располагаются на общей прямой линии.<br>3) При $r^*=0$ линейная корреляционная связь отсутствует. При этом линии регрессии $Y$ на $X$ и $X$ на $Y$ параллельны осям координат.<br><br><b>Замечание.</b> Равенство $r^*=0$ говорит лишь об отсутствии линейной корреляционной зависимости (некоррелированности переменных), но не вообще об отсутствии корреляционной, а тем более статистической зависимости."},
 {lec:"Лекция 9. Коэффициент корреляции",
  q:"Как проверить <em>значимость</em> коэффициента корреляции?",
  a:"$H_0:\\{r_{xy}=0\\}$, $H_1:\\{r_{xy}\\neq 0\\}$. Статистика: $$t=\\frac{r^*\\sqrt{n-2}}{\\sqrt{1-(r^*)^2}}\\sim t(n-2).$$ Критическая область двусторонняя: $|t|>t_{\\text{кр}}(\\alpha,\\,n-2)$."},
@@ -1062,7 +1229,7 @@ const ALL = [
  a:"$$\\rho^*=1-\\frac{6\\displaystyle\\sum_{i=1}^{n}(r_i-s_i)^2}{n^3-n}$$ называется <b>выборочным коэффициентом ранговой корреляции Спирмена</b>. Здесь $n$ — число наблюдений; $r_i$ и $s_i$ — ранги $i$-ого объекта по признакам $X$ и $Y$."},
 {lec:"Лекция 10. Ранговая корреляция",
  q:"Каковы <em>свойства</em> коэффициента Спирмена?",
- a:"1) Если $r_i=s_i$ для всех $i$, то $\\rho^*=1$.<br>2) Если ранги расположены в обратном порядке, то $\\rho^*=-1$.<br>3) Во всех случаях $-1\\leq\\rho^*\\leq 1$."},
+ a:"1) Если между признаками $X$ и $Y$ имеется «полная прямая зависимость» в том смысле, что ранги всех объектов совпадают ($r_i=s_i$, $i=1,2,\\ldots,n$), то $\\rho^*=1$.<br>2) Если между признаками $X$ и $Y$ имеется «противоположная зависимость» в том смысле, что ранги объектов по этим признакам расположены в обратном порядке, то $\\rho^*=-1$.<br>3) Во всех случаях $-1\\leq\\rho^*\\leq 1$."},
 {lec:"Лекция 10. Ранговая корреляция",
  q:"Как проверить <em>значимость</em> коэффициента Спирмена?",
  a:"Статистика $t=\\dfrac{\\rho^*\\sqrt{n-2}}{\\sqrt{1-(\\rho^*)^2}}\\sim t(n-2)$ при верной $H_0$.<br>Коэффициент $\\rho^*$ значим, если $|t|>t_{\\text{кр}}(\\alpha,n-2)$ (двусторонняя крит. область)."},
@@ -1082,22 +1249,6 @@ const ALL = [
 {lec:"Лекция 11. Моделирование СВ",
  q:"Алгоритм преобразования НСВ $X\\sim U(0,1)$ в ДСВ $Y$ с рядом распределения.",
  a:"1) Разбиваем $(0,1)$: $\\Delta_1=(0,p_1]$, $\\Delta_2=(p_1,p_1{+}p_2]$, …, $\\Delta_n=(p_1{+}\\ldots{+}p_{n-1},1)$.<br>2) «Разыгрываем» $x$ НСВ $X$.<br>3) Если $x\\in\\Delta_i$, то $Y=y_i$."},
-// ── Лекция 12 ─────────────────────────────────────────────────
-{lec:"Лекция 12. Законы распределения",
- q:"Что называется <em>гамма-функцией</em>? Запишите её свойства.",
- a:"$$\\Gamma(a)=\\int_0^{\\infty}x^{a-1}e^{-x}\\,dx.$$ Свойства: 1) $\\Gamma(a{+}1)=a\\Gamma(a)$; 2) $\\Gamma(n{+}1)=n!$; 3) $\\Gamma(a)\\to\\infty$ при $a\\to 0$ и $a\\to\\infty$; 4) Минимум при $a_0\\approx1{,}46$, равный $\\approx0{,}88$."},
-{lec:"Лекция 12. Законы распределения",
- q:"Что называется <em>$\\chi^2$-распределением</em> (Пирсона)?",
- a:"Распределение суммы квадратов $n$ независимых $N(0,1)$-СВ: $$\\chi^2=Z_1^2+\\ldots+Z_n^2.$$ $$M(\\chi^2)=n,\\quad D(\\chi^2)=2n.$$"},
-{lec:"Лекция 12. Законы распределения",
- q:"Что называется <em>распределением Стьюдента</em>? $M(t)$, $D(t)$.",
- a:"Распределение СВ $t=Z/\\sqrt{\\chi^2/n}$, где $Z\\sim N(0,1)$; $\\chi^2$ — независимое $\\chi^2(n)$. $$M(t)=0,\\quad D(t)=\\frac{n}{n-2}\\;(n>2).$$"},
-{lec:"Лекция 12. Законы распределения",
- q:"Что называется <em>распределением Фишера–Снедекора</em>? $M(F)$, $D(F)$.",
- a:"Распределение СВ $F=\\dfrac{\\chi^2(n_1)/n_1}{\\chi^2(n_2)/n_2}$, где $\\chi^2(n_1)$, $\\chi^2(n_2)$ — независимые. $$M(F)=\\frac{n_2}{n_2-2}\\;(n_2{>}2);\\quad D(F)=\\frac{2n_2^2(n_1{+}n_2{-}2)}{n_1(n_2{-}2)^2(n_2{-}4)}\\;(n_2{>}4).$$"},
-{lec:"Лекция 12. Законы распределения",
- q:"Что называется <em>гамма-распределением</em>? $M(X)$, $D(X)$.",
- a:"НСВ $X$ имеет гамма-распределение, если $$f(x)=\\begin{cases}\\dfrac{\\lambda^a}{\\Gamma(a)}x^{a-1}e^{-\\lambda x}, & x>0,\\\\0, & x\\leq 0\\end{cases}\\quad(a,\\lambda>0).$$ $$M(X)=\\frac{a}{\\lambda},\\quad D(X)=\\frac{a}{\\lambda^2}.$$"},
 ];
 
 /* ================================================================
@@ -1116,7 +1267,6 @@ const TOPICS = {
   'Лекция 9. Коэффициент корреляции':       'Коэфф. корреляции',
   'Лекция 10. Ранговая корреляция':         'Ранг. корреляция',
   'Лекция 11. Моделирование СВ':            'Моделирование',
-  'Лекция 12. Законы распределения':        'Законы распред.',
 };
 
 let chosenMode = 'ordered';
@@ -1134,7 +1284,7 @@ LECS.forEach((l,i) => {
   grid.appendChild(btn);
 });
 
-let chosenCount = 85; // default: all
+let chosenCount = 80; // default: all (80 cards, лекции 1-11)
 
 function setMode(btn) {
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
@@ -1158,7 +1308,8 @@ function onSlider(input) {
   chosenCount = parseInt(input.value);
   document.getElementById('count-display').textContent = chosenCount;
   // update gradient fill
-  const pct = (chosenCount - 1) / (ALL.length - 1) * 100;
+  const maxN = document.getElementById('count-range').max || ALL.length;
+  const pct = (chosenCount - 1) / (maxN - 1) * 100;
   input.style.setProperty('--fill', pct + '%');
   // sync hint on mode button
   const h = document.getElementById('random-hint');
@@ -1297,25 +1448,29 @@ function renderQuizQ() {
   document.getElementById('quiz-q').innerHTML = c.q;
   if (window.MathJax) MathJax.typesetPromise([document.getElementById('quiz-q')]);
 
-  // build 4 options: 1 correct + 3 distractors from same lecture
-  const correctLabel = getCardLabel(c);
-  const pool = ALL.filter(x => x !== c && x.lec === c.lec);
-  // if same lecture has fewer than 3 others, pull from all cards
-  const extra = ALL.filter(x => x !== c && x.lec !== c.lec);
-  while (pool.length < 3) pool.push(extra[Math.floor(Math.random()*extra.length)]);
-  shuffleArr(pool);
-  const distractors = pool.slice(0,3).map(getCardLabel);
+  // сброс сетки (на случай переключения режимов)
+  document.getElementById('quiz-opts').style.gridTemplateColumns = '';
 
-  const opts = [correctLabel, ...distractors];
-  shuffleArr(opts);
-  const correctIdx = opts.indexOf(correctLabel);
+  // варианты ответа = настоящие определения (answerPreview)
+  const correctAnswer = c.a;
+  let pool = ALL.filter(x => x !== c && x.lec === c.lec);
+  const extra = [...ALL.filter(x => x !== c && x.lec !== c.lec)];
+  shuffleArr(pool); shuffleArr(extra);
+  while (pool.length < 3) pool.push(extra.pop());
+  const distractors = pool.slice(0, 3).map(x => x.a);
 
-  const LETTERS = ['A','B','C','D'];
+  const allOpts = [correctAnswer, ...distractors];
+  shuffleArr(allOpts);
+  const correctIdx = allOpts.indexOf(correctAnswer);
+
+  const LETTERS = ['А','Б','В','Г'];
   const wrap = document.getElementById('quiz-opts');
-  wrap.innerHTML = opts.map((label, i) => `
+  wrap.style.gridTemplateColumns = '1fr';   // 1 колонка — тексты длинные
+
+  wrap.innerHTML = allOpts.map((ans, i) => `
     <button class="qopt" onclick="selectQuizAnswer(this,${i},${correctIdx})">
       <span class="qopt-ltr">${LETTERS[i]}</span>
-      <span>${label}</span>
+      <span>${answerPreview(ans)}</span>
     </button>`).join('');
 }
 
@@ -1431,6 +1586,7 @@ window.startSession = function() {
 // ── patch goBack to hide study/quiz screens too ───────────────────
 const _origGoBack = goBack;
 window.goBack = function() {
+  bonusMode = false;
   ['study-screen','quiz-screen','quiz-results-screen'].forEach(id=>{
     const el = document.getElementById(id);
     if (el) { el.classList.remove('visible'); el.style.opacity=''; el.style.transition=''; }
@@ -1458,7 +1614,19 @@ function updateStartBtn() {
 
 function startSession() {
   const rawName = document.getElementById('wname').value.trim();
-  const name = rawName || 'Студент';
+  if (!rawName) {
+    const inp = document.getElementById('wname');
+    inp.classList.remove('error');
+    // force reflow to restart animation
+    void inp.offsetWidth;
+    inp.classList.add('error');
+    document.getElementById('name-error').classList.add('visible');
+    inp.focus();
+    setTimeout(()=> inp.classList.remove('error'), 400);
+    return;
+  }
+  document.getElementById('name-error').classList.remove('visible');
+  const name = rawName;
 
   // Build deck
   if (chosenMode === 'ordered') {
@@ -1551,6 +1719,9 @@ let answers = []; // 'known' | 'unknown' | null  — per card in current deck
    RENDER
 ================================================================ */
 function render() {
+  // сбросить кнопку «Далее» бонусного теста
+  document.getElementById('bonus-next-wrap').style.display = 'none';
+
   const c = cards[idx];
   document.getElementById('fc-lec').textContent = c.lec;
   document.getElementById('fc-q').innerHTML     = c.q;
@@ -1572,9 +1743,23 @@ function render() {
   document.getElementById('stat-k').textContent = '✓ ' + nK;
   document.getElementById('stat-u').textContent = '✗ ' + nU;
 
-  // verdict buttons: show only when answer is revealed
+  // в бонусном режиме кнопки видны сразу (до ответа), иначе — только после переворота
   const vw = document.getElementById('verdict-wrap');
-  vw.classList.toggle('show', revealed);
+  if (bonusMode) {
+    vw.classList.toggle('show', !revealed); // видны пока ответ НЕ показан
+    // переопределяем обработчики на bonusVerdict
+    document.getElementById('v-yes').onclick = ()=> bonusVerdict('known');
+    document.getElementById('v-no').onclick  = ()=> bonusVerdict('unknown');
+    // убираем подсказку «нажмите чтобы увидеть ответ»
+    const hint = document.querySelector('.fc .hint');
+    if (hint) hint.style.visibility = 'hidden';
+  } else {
+    vw.classList.toggle('show', revealed);
+    document.getElementById('v-yes').onclick = ()=> verdict('known');
+    document.getElementById('v-no').onclick  = ()=> verdict('unknown');
+    const hint = document.querySelector('.fc .hint');
+    if (hint) hint.style.visibility = '';
+  }
 
   // highlight current answer if already picked
   const cur = answers[idx];
@@ -1613,6 +1798,7 @@ function flipAnim(callback) {
 }
 
 function onCardClick() {
+  if (bonusMode) return; // в бонусном режиме карточка не переворачивается вручную
   flipAnim(()=>{
     revealed = !revealed;
     const card = document.getElementById('card');
@@ -1837,6 +2023,225 @@ document.getElementById('wname').addEventListener('keydown', e=>{
 });
 
 /* ================================================================
+   SPLASH — COUNTDOWN
+================================================================ */
+const EXAM_DATE = new Date('2026-05-22T10:20:00');
+
+function updateCountdown() {
+  const now  = new Date();
+  const diff = EXAM_DATE - now;
+
+  if (diff <= 0) {
+    document.getElementById('sp-label').textContent   = '';
+    document.getElementById('countdown').style.display = 'none';
+    // show done message
+    const done = document.createElement('div');
+    done.className = 'sp-done';
+    done.textContent = 'Экзамен уже был! Надеемся, всё прошло хорошо 🎉';
+    document.getElementById('countdown').replaceWith(done);
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
+
+  document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+  document.getElementById('sp-label').textContent = '⏳ Не теряй время!';
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+function showWelcome() {
+  const splash = document.getElementById('splash');
+  splash.style.transition = 'opacity .4s ease';
+  splash.style.opacity    = '0';
+  setTimeout(()=>{
+    splash.style.display = 'none';
+    const w = document.getElementById('welcome');
+    w.style.display  = 'flex';
+    w.style.opacity  = '0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      w.style.transition = 'opacity .4s ease';
+      w.style.opacity    = '1';
+      checkResume();
+    }));
+  }, 400);
+}
+
+/* ================================================================
+   БОНУСНЫЙ ТЕСТ
+================================================================ */
+const WRONG_MSGS = [
+  { emoji:'😭', text:'Ничего страшного, сдавайся!' },
+  { emoji:'🤡', text:'Всё равно ничего не успеешь!' },
+  { emoji:'💀', text:'Не расстраивайся — математика не для всех' },
+  { emoji:'😬', text:'Виктор Анатольевич будет зол' },
+  { emoji:'🙏', text:'Спасибо богу, что придумал пересдачи' },
+  { emoji:'🪦', text:'Карл Пирсон в гробу перевернулся' },
+  { emoji:'😮‍💨', text:'Это фиаско, братан' },
+  { emoji:'🙃', text:'Ну и ладно, главное — попытка' },
+  { emoji:'😴', text:'Закрой ноутбук и иди спать' },
+  { emoji:'🧨', text:'Шансы на пятёрку улетели' },
+  { emoji:'🫠', text:'Генеральная совокупность плачет' },
+  { emoji:'📉', text:'p-value твоих знаний = 0.0001' },
+  { emoji:'🤦', text:'Нулевая гипотеза: ты знаешь статистику. Отвергнута.' },
+  { emoji:'🎰', text:'Может, просто угадывать на экзамене?' },
+  { emoji:'🥲', text:'Стьюдент разочарован' },
+  { emoji:'😵', text:'Ошибка первого рода — думал, что знаешь' },
+  { emoji:'🐌', text:'Даже черепаха учится быстрее' },
+  { emoji:'📚', text:'Открой лекции. Прямо сейчас.' },
+  { emoji:'🤧', text:'Выборочная медиана в шоке' },
+  { emoji:'🌊', text:'Тебя накрыло дисперсионным анализом' },
+  { emoji:'🃏', text:'Хотя бы попытался — зачтём' },
+  { emoji:'🏳️', text:'Белый флаг засчитан' },
+  { emoji:'🤮', text:'Метод максимального правдоподобия плачет навзрыд' },
+  { emoji:'💸', text:'Деньги на учёбу потрачены не зря... или нет' },
+  { emoji:'🫥', text:'Фишер-Снедекор разочарован в тебе' },
+];
+const RIGHT_MSGS = [
+  { emoji:'🕵️', text:'Списал' },
+  { emoji:'🎲', text:'Угадал' },
+  { emoji:'😏', text:'Карим Сыздыков подсказал?' },
+  { emoji:'🤖', text:'ChatGPT подсказал, да?' },
+  { emoji:'🍀', text:'Просто повезло' },
+  { emoji:'👀', text:'Шпаргалка?' },
+  { emoji:'🤥', text:'Не верю' },
+  { emoji:'🪄', text:'Случайно угадал — признайся' },
+  { emoji:'😤', text:'Зубрила. Жизни нет небось' },
+  { emoji:'🦜', text:'Вызубрил как попугай' },
+  { emoji:'😳', text:'Сам удивился что знаешь?' },
+  { emoji:'🙄', text:'Один раз — не считается' },
+  { emoji:'😬', text:'Виктор Анатольевич всё равно не верит' },
+  { emoji:'🤫', text:'Тихо, другим обидно' },
+  { emoji:'💸', text:'Сколько заплатил за подсказку?' },
+  { emoji:'🤔', text:'Подождём следующего вопроса' },
+  { emoji:'🎭', text:'Вид делаешь что знаешь' },
+  { emoji:'😆', text:'Ладно, зачтём. Но осторожно' },
+];
+
+let bonusMode = false;
+
+function startBonusTest() {
+  const rawName = document.getElementById('wname').value.trim();
+  if (!rawName) {
+    const inp = document.getElementById('wname');
+    inp.classList.remove('error'); void inp.offsetWidth;
+    inp.classList.add('error');
+    document.getElementById('name-error').classList.add('visible');
+    inp.focus();
+    setTimeout(()=> inp.classList.remove('error'), 400);
+    return;
+  }
+  document.getElementById('name-error').classList.remove('visible');
+
+  bonusMode = true;
+  cards   = [...ALL];
+  shuffleArr(cards);
+  answers = new Array(cards.length).fill(null);
+  idx     = 0;
+  revealed = false;
+
+  const name = rawName;
+  document.getElementById('app-eyebrow').textContent  = 'Бонусный тест 🎰';
+  document.getElementById('app-greeting').textContent = 'Удачи, ' + name + '!';
+  document.getElementById('plec').textContent         = 'Все лекции · ' + cards.length + ' карточек';
+
+  sbInsert('visits', { name, mode:'bonus', lecture:null, card_count: cards.length, ...getDeviceInfo() });
+  getLocation().then(()=>{});
+
+  const w = document.getElementById('welcome');
+  w.style.transition = 'opacity .3s'; w.style.opacity = '0';
+  setTimeout(()=>{
+    w.style.display = 'none';
+    allScreensOff();
+    fadeIn('app');
+    window.scrollTo(0, 0);
+    render();
+  }, 300);
+}
+
+/* В бонусном режиме:
+   1. нажал кнопку → реакция (дольше)
+   2. реакция угасла → карточка переворачивается (ответ)
+   3. появляется кнопка «Далее →»
+   4. нажал «Далее →» → следующий вопрос                 */
+function bonusVerdict(type) {
+  if (busy) return;
+  answers[idx] = type;
+
+  // обновить счётчики и прогресс-бар
+  const nK = answers.filter(a=>a==='known').length;
+  const nU = answers.filter(a=>a==='unknown').length;
+  document.getElementById('stat-k').textContent = '✓ ' + nK;
+  document.getElementById('stat-u').textContent = '✗ ' + nU;
+  document.getElementById('pfill').style.width =
+    (answers.filter(a=>a!==null).length / cards.length * 100) + '%';
+
+  // скрыть кнопки Знаю/Не знаю
+  document.getElementById('verdict-wrap').classList.remove('show');
+
+  // 1. сначала реакция
+  showReaction(type === 'known', ()=>{
+    // 2. после реакции — перевернуть карточку, показать ответ
+    flipAnim(()=>{
+      revealed = true;
+      document.getElementById('card').classList.add('flipped');
+      if (window.MathJax) MathJax.typesetPromise([document.getElementById('bc-a')]);
+    });
+    // 3. показать кнопку «Далее →»
+    document.getElementById('bonus-next-wrap').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+function bonusNext() {
+  document.getElementById('bonus-next-wrap').style.display = 'none';
+  if (idx === cards.length - 1) {
+    bonusMode = false;
+    showResults();
+  } else {
+    slideAnim(+1, ()=>{ idx++; revealed = false; render(); });
+  }
+}
+
+/* Контекстные реакции — зависят от темы вопроса */
+function getContextReaction(qHtml, isCorrect) {
+  const q = qHtml.toLowerCase().replace(/<[^>]+>/g,'');
+  const checks = [
+    { kw:['хи-квадрат','хи квадрат','\\chi','chi'],
+      y:{emoji:'😂', text:'Хи-хи-хи квадрат!'},
+      n:{emoji:'😂', text:'Хи-хи-хи квадрат...'} },
+  ];
+  for (const c of checks) {
+    if (c.kw.some(k => q.includes(k))) return isCorrect ? c.y : c.n;
+  }
+  return null;
+}
+
+function showReaction(isCorrect, cb) {
+  // сначала ищем контекстную реакцию, иначе — случайная из пула
+  const curQ   = (bonusMode && cards[idx]) ? cards[idx].q : '';
+  const special = getContextReaction(curQ, isCorrect);
+  const pool   = isCorrect ? RIGHT_MSGS : WRONG_MSGS;
+  const pick   = special || pool[Math.floor(Math.random() * pool.length)];
+  const bubble = document.getElementById('reaction-bubble');
+  bubble.className = 'reaction-bubble ' + (isCorrect ? 'good' : 'bad');
+  document.getElementById('reaction-emoji').textContent = pick.emoji;
+  document.getElementById('reaction-text').textContent  = pick.text;
+  const ov = document.getElementById('reaction-overlay');
+  ov.classList.add('show');
+  // дольше — чтобы успеть прочитать
+  setTimeout(()=>{ ov.classList.remove('show'); setTimeout(cb, 250); },
+    isCorrect ? 2200 : 2800);
+}
+
+/* ================================================================
    PHASE 2 — localStorage
 ================================================================ */
 const LS_KEY = 'matstat_v1';
@@ -1949,8 +2354,7 @@ window.showResults = function() {
   _origShowResults();
 };
 
-// init: check for saved progress on page load
-checkResume();
+// checkResume() вызывается из showWelcome() при переходе с экрана таймера
 
 /* ================================================================
    PHASE 3 — Touch swipes
@@ -2050,6 +2454,14 @@ checkResume();
     <button class="res-btn rb-primary"    onclick="retryQuiz()">↺ Пройти тест снова</button>
     <button class="res-btn rb-secondary"  onclick="backToStudy()">📖 Вернуться к конспекту</button>
     <button class="res-btn rb-ghost"      onclick="goBack()">↩ Изменить режим</button>
+  </div>
+</div>
+
+<!-- Reaction overlay (бонусный тест) -->
+<div id="reaction-overlay">
+  <div class="reaction-bubble" id="reaction-bubble">
+    <span class="reaction-emoji" id="reaction-emoji"></span>
+    <div class="reaction-text" id="reaction-text"></div>
   </div>
 </div>
 
