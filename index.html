@@ -808,12 +808,12 @@ h1 em { font-style:italic; color:var(--gold); }
       <button class="mode-btn active" data-mode="ordered" onclick="setMode(this)">
         <span class="mico">📋</span>
         <span class="mname">По порядку</span>
-        <span class="mhint">все 80 карточек</span>
+        <span class="mhint">все 85 карточек</span>
       </button>
-      <button class="mode-btn" data-mode="random" onclick="setMode(this)">
+      <button class="mode-btn" onclick="startBonusTest()">
         <span class="mico">🎲</span>
-        <span class="mname">Случайные</span>
-        <span class="mhint" id="random-hint">выбрать количество</span>
+        <span class="mname">Случайный режим</span>
+        <span class="mhint">испытание нервов</span>
       </button>
       <button class="mode-btn" data-mode="lecture" onclick="setMode(this)">
         <span class="mico">📖</span>
@@ -825,27 +825,7 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mname">Учить</span>
         <span class="mhint">конспект + тест</span>
       </button>
-      <button class="mode-btn mode-btn-bonus" onclick="startBonusTest()">
-        <span class="mico">🎰</span>
-        <div>
-          <span class="mname">Бонусный тест</span>
-          <span class="mhint">режим испытания нервов</span>
-        </div>
-      </button>
     </div>
-  </div>
-
-  <!-- Count picker (shown when mode = random) -->
-  <div class="count-picker" id="count-picker">
-    <span class="count-label">Сколько карточек?</span>
-    <div class="slider-row">
-      <div class="count-value">
-        <span id="count-display">80</span>
-        <span>карточек</span>
-      </div>
-      <input class="count-range" id="count-range" type="range" min="1" max="80" value="80" oninput="onSlider(this)">
-    </div>
-    <div class="slider-bounds"><span>1</span><span>85</span></div>
   </div>
 
   <!-- Lecture picker (shown when mode = lecture) -->
@@ -1296,18 +1276,13 @@ LECS.forEach((l,i) => {
   grid.appendChild(btn);
 });
 
-let chosenCount = 80; // default: all (80 cards, лекции 1-11)
-
 function setMode(btn) {
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   chosenMode = btn.dataset.mode;
 
-  const lecPicker   = document.getElementById('lec-picker');
-  const countPicker = document.getElementById('count-picker');
-
-  lecPicker.classList.toggle('open',   chosenMode === 'lecture');
-  countPicker.classList.toggle('open', chosenMode === 'random');
+  const lecPicker = document.getElementById('lec-picker');
+  lecPicker.classList.toggle('open', chosenMode === 'lecture');
 
   if (chosenMode !== 'lecture') {
     chosenLec = null;
@@ -1315,24 +1290,6 @@ function setMode(btn) {
   }
   updateStartBtn();
 }
-
-function onSlider(input) {
-  chosenCount = parseInt(input.value);
-  document.getElementById('count-display').textContent = chosenCount;
-  // update gradient fill
-  const maxN = document.getElementById('count-range').max || ALL.length;
-  const pct = (chosenCount - 1) / (maxN - 1) * 100;
-  input.style.setProperty('--fill', pct + '%');
-  // sync hint on mode button
-  const h = document.getElementById('random-hint');
-  if (h) h.textContent = chosenCount >= ALL.length ? 'все карточки' : chosenCount + ' карточек';
-}
-
-// init slider gradient on page load
-window.addEventListener('DOMContentLoaded', ()=>{
-  const r = document.getElementById('count-range');
-  if (r) { r.style.setProperty('--fill', '100%'); }
-});
 
 /* ================================================================
    STUDY + QUIZ MODE
@@ -1643,10 +1600,6 @@ function startSession() {
   // Build deck
   if (chosenMode === 'ordered') {
     cards = [...ALL];
-  } else if (chosenMode === 'random') {
-    cards = [...ALL];
-    shuffleArr(cards);
-    cards = cards.slice(0, chosenCount);
   } else {
     cards = ALL.filter(c=>c.lec===chosenLec);
   }
@@ -1669,9 +1622,7 @@ function startSession() {
   // Greeting
   document.getElementById('app-greeting').textContent = 'Удачи, ' + name + '!';
   document.getElementById('app-eyebrow').textContent =
-    chosenMode === 'lecture' ? chosenLec
-    : chosenMode === 'random' ? `Случайные · ${cards.length} карточек`
-    : 'Все лекции по порядку';
+    chosenMode === 'lecture' ? chosenLec : 'Все лекции по порядку';
 
   // Transition
   const welcome = document.getElementById('welcome');
@@ -1687,8 +1638,7 @@ function startSession() {
       app.style.transition = 'opacity .4s ease';
       app.style.opacity = '1';
       // set progress label from chosen mode
-      const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.')
-        : chosenMode==='random' ? 'Случайные' : 'Все лекции';
+      const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.') : 'Все лекции';
       document.getElementById('plec').textContent = modeLabel;
       render();
     }));
@@ -1916,8 +1866,11 @@ function showResults() {
   });
 
   // show/hide buttons
-  const hasWeak = answers.some(a=>a==='unknown');
-  document.getElementById('btn-retry-weak').style.display  = hasWeak ? '' : 'none';
+  const weakCount = answers.filter(a=>a==='unknown').length;
+  const hasWeak = weakCount > 0;
+  const btnWeak = document.getElementById('btn-retry-weak');
+  btnWeak.style.display = hasWeak ? '' : 'none';
+  btnWeak.textContent = `↺ Повторить ошибки (${weakCount})`;
   document.getElementById('btn-back-study').style.display  = studyLec ? '' : 'none';
 
   // transition: hide app, show results
