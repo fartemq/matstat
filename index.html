@@ -15,19 +15,19 @@ MathJax = {
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
 :root {
-  --bg:      #0b0a07;
-  --bg2:     #151310;
-  --gold:    #c8a44a;
-  --gold-lt: #e6c46a;
-  --gold-dim:rgba(200,164,74,.13);
-  --parch:   #f3edd6;
-  --parch-m: #e4ddc1;
-  --ink:     #1c1808;
-  --ink-lt:  #8b6840;
-  --txt:     #d5cfc0;
-  --txt-dim: rgba(213,207,192,.42);
-  --bdr:     rgba(200,164,74,.22);
-  --bdr-hi:  rgba(200,164,74,.5);
+  --bg:      #f2ead8;
+  --bg2:     #e8ddc8;
+  --gold:    #8c6820;
+  --gold-lt: #a87e28;
+  --gold-dim:rgba(140,104,32,.12);
+  --parch:   #faf6ee;
+  --parch-m: #f0e8d8;
+  --ink:     #1c1408;
+  --ink-lt:  #6b4e20;
+  --txt:     #2c1e0c;
+  --txt-dim: rgba(44,30,12,.45);
+  --bdr:     rgba(140,104,32,.22);
+  --bdr-hi:  rgba(140,104,32,.5);
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 
@@ -39,7 +39,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   background: var(--bg);
-  background-image: radial-gradient(rgba(200,164,74,.09) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(140,104,32,.07) 1px, transparent 1px);
   background-size: 26px 26px;
   color: var(--txt);
   min-height: 100vh;
@@ -68,7 +68,7 @@ body {
 .w-title {
   font-family:'Cormorant Garamond',serif;
   font-size:clamp(2rem,5vw,3rem); font-weight:600;
-  color:var(--parch); line-height:1.05; text-align:center; letter-spacing:.02em;
+  color:var(--ink); line-height:1.05; text-align:center; letter-spacing:.02em;
 }
 .w-title em { font-style:italic; color:var(--gold); }
 .w-rule {
@@ -307,7 +307,7 @@ header {
 h1 {
   font-family:'Cormorant Garamond',serif;
   font-size:clamp(1.6rem,4vw,2.4rem); font-weight:600;
-  color:var(--parch); letter-spacing:.03em; line-height:1.05;
+  color:var(--ink); letter-spacing:.03em; line-height:1.05;
 }
 h1 em { font-style:italic; color:var(--gold); }
 .greeting {
@@ -686,12 +686,12 @@ h1 em { font-style:italic; color:var(--gold); }
 ══════════════════════════════════════════ */
 #lb-overlay {
   position:fixed; inset:0; z-index:300;
-  background:rgba(0,0,0,.78); backdrop-filter:blur(5px);
+  background:rgba(44,30,12,.6); backdrop-filter:blur(5px);
   display:none; align-items:center; justify-content:center; padding:20px;
 }
 #lb-overlay.open { display:flex; }
 .lb-panel {
-  background:#1a1710; border:1px solid var(--bdr-hi);
+  background:#fffdf7; border:1px solid var(--bdr-hi);
   border-radius:8px; padding:32px 28px; max-width:480px; width:100%;
   max-height:85vh; overflow-y:auto;
 }
@@ -759,10 +759,10 @@ h1 em { font-style:italic; color:var(--gold); }
 }
 #reaction-overlay.show .reaction-bubble { transform:scale(1); }
 .reaction-bubble.good {
-  background:#1a2e1a; border:1px solid #7ecb7e;
+  background:#fffdf7; border:1px solid #7ecb7e;
 }
 .reaction-bubble.bad {
-  background:#2e1a1a; border:1px solid #e07878;
+  background:#fffdf7; border:1px solid #e07878;
 }
 .reaction-emoji { font-size:2.8rem; margin-bottom:10px; display:block; }
 .reaction-text {
@@ -963,6 +963,17 @@ h1 em { font-style:italic; color:var(--gold); }
   <div class="w-title">Математическая <em>Статистика</em></div>
   <div class="w-rule"></div>
 
+  <!-- Card of the day -->
+  <div style="width:100%;max-width:440px;margin-bottom:24px;padding:14px 18px;background:var(--gold-dim);border:1px solid var(--bdr);border-radius:6px;" id="card-of-day">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.7;display:block;margin-bottom:6px;">📌 Карточка дня</span>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--txt);line-height:1.5;" id="cod-text"></div>
+  </div>
+
+  <!-- Who is online -->
+  <div id="online-wrap" style="width:100%;max-width:440px;margin-bottom:16px;min-height:20px;display:none;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.12em;color:var(--gold);opacity:.7;" id="online-text"></span>
+  </div>
+
   <!-- Inline leaderboard -->
   <div class="lb-inline" id="lb-inline">
     <div class="lb-inline-title">🏆 Топ &mdash; Случайный и Экзамен</div>
@@ -1006,6 +1017,11 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mico">🎓</span>
         <span class="mname">Учить</span>
         <span class="mhint">конспект + тест</span>
+      </button>
+      <button class="mode-btn" id="weak-mode-btn" data-mode="weak" onclick="setMode(this)">
+        <span class="mico">🎯</span>
+        <span class="mname">Слабые места</span>
+        <span class="mhint" id="weak-hint">карточки где ошибся</span>
       </button>
       <button class="mode-btn mode-btn-wide" data-mode="exam" onclick="setMode(this)">
         <span class="mico">⏱</span>
@@ -1868,7 +1884,15 @@ function startSession() {
   const name = rawName;
 
   // Build deck
-  if (chosenMode === 'ordered') {
+  if (chosenMode === 'weak') {
+    const v = loadVerdicts();
+    cards = ALL.filter((_,i) => v[i] === 'unknown');
+    if (cards.length === 0) {
+      alert('Нет слабых карточек! Сначала пройди хотя бы одну сессию.');
+      return;
+    }
+    shuffleArr(cards);
+  } else if (chosenMode === 'ordered') {
     cards = [...ALL].slice(0, chosenCount);
   } else if (chosenMode === 'exam') {
     cards = [...ALL]; shuffleArr(cards);
@@ -1906,6 +1930,7 @@ function startSession() {
     chosenMode === 'lecture' ? chosenLec
     : chosenMode === 'exam'  ? '⏱ Режим экзамена'
     : chosenMode === 'bonus' ? 'Случайный режим 🎲'
+    : chosenMode === 'weak'  ? '🎯 Слабые места'
     : 'Все лекции по порядку';
 
   // Transition
@@ -1925,6 +1950,7 @@ function startSession() {
       const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.')
         : chosenMode==='exam'  ? '⏱ Экзамен'
         : chosenMode==='bonus' ? '🎲 Случайный'
+        : chosenMode==='weak'  ? '🎯 Слабые'
         : 'Все лекции';
       document.getElementById('plec').textContent = modeLabel;
       render();
@@ -1954,6 +1980,8 @@ function goBack() {
     loadLeaderboard();
     loadHallOfShame();
     loadHardestCards();
+    updateWeakHint();
+    loadOnlineUsers();
     const w = document.getElementById('welcome');
     w.style.display = 'flex';
     w.style.opacity = '0';
@@ -2335,9 +2363,12 @@ function showWelcome() {
       w.style.opacity    = '1';
       checkResume();
       renderProgressMap();
+      renderCardOfDay();
       loadLeaderboard();
       loadHallOfShame();
       loadHardestCards();
+      updateWeakHint();
+      loadOnlineUsers();
       // init count picker for default ordered mode
       const _r = document.getElementById('count-range');
       if (_r) { chosenCount = ALL.length; _r.max = ALL.length; _r.value = ALL.length; onSlider(_r); const _ml = document.getElementById('count-max-label'); if (_ml) _ml.textContent = ALL.length; document.getElementById('count-picker').classList.add('open'); }
@@ -2698,6 +2729,24 @@ function renderProgressMap() {
   }).join('');
 }
 
+function renderCardOfDay() {
+  const el = document.getElementById('cod-text');
+  if (!el) return;
+  const dayIdx = Math.floor(Date.now() / 86400000) % ALL.length;
+  const card = ALL[dayIdx];
+  el.innerHTML = card.q.replace(/<em>/g,'<em style="color:var(--gold)">');
+  if (window.MathJax) setTimeout(()=>MathJax.typesetPromise([el]),50);
+}
+
+function updateWeakHint() {
+  const v = loadVerdicts();
+  const cnt = ALL.filter((_,i) => v[i] === 'unknown').length;
+  const btn = document.getElementById('weak-mode-btn');
+  const hint = document.getElementById('weak-hint');
+  if (hint) hint.textContent = cnt > 0 ? `${cnt} карточек` : 'пока нет';
+  if (btn) btn.style.opacity = cnt > 0 ? '1' : '.5';
+}
+
 /* ================================================================
    TIMER MODE — 15 seconds per card
 ================================================================ */
@@ -2784,6 +2833,25 @@ async function fetchLbRows(limit) {
     { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
   );
   return r.json();
+}
+
+async function loadOnlineUsers() {
+  const wrap = document.getElementById('online-wrap');
+  const el = document.getElementById('online-text');
+  if (!el) return;
+  try {
+    const since = new Date(Date.now() - 15*60*1000).toISOString();
+    const r = await fetch(
+      `${SB_URL}/rest/v1/visits?select=name&created_at=gte.${since}&order=created_at.desc&limit=20`,
+      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || rows.length === 0) { wrap.style.display='none'; return; }
+    const names = [...new Set(rows.map(r=>r.name).filter(Boolean))].slice(0,5);
+    if (names.length === 0) { wrap.style.display='none'; return; }
+    wrap.style.display = '';
+    el.textContent = '● Сейчас готовятся: ' + names.join(', ');
+  } catch { wrap.style.display='none'; }
 }
 
 async function loadLeaderboard() {
