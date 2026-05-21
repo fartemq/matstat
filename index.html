@@ -968,7 +968,7 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mico">⏱</span>
         <div>
           <span class="mname">Режим экзамена</span>
-          <span class="mhint">15 сек на карточку · все 85</span>
+          <span class="mhint">1 минута на вопрос · все 85</span>
         </div>
       </button>
     </div>
@@ -1042,6 +1042,12 @@ h1 em { font-style:italic; color:var(--gold); }
   <!-- Далее (только в бонусном режиме, после показа ответа) -->
   <div id="bonus-next-wrap" style="display:none; width:100%; max-width:680px; margin-top:14px;">
     <button class="start-btn" style="width:100%; margin-top:0;" onclick="bonusNext()">Далее →</button>
+  </div>
+
+  <!-- Далее (режим экзамена — время вышло) -->
+  <div id="exam-next-wrap" style="display:none; width:100%; max-width:680px; margin-top:14px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:#e07878;letter-spacing:.08em;margin-bottom:10px;text-align:center;">⏱ Время вышло — засчитано «Не знаю»</div>
+    <button class="start-btn" style="width:100%; margin-top:0;" onclick="examNext()">Далее →</button>
   </div>
 
   <div class="nav">
@@ -1865,8 +1871,9 @@ let answers = []; // 'known' | 'unknown' | null  — per card in current deck
    RENDER
 ================================================================ */
 function render() {
-  // сбросить кнопку «Далее» бонусного теста
+  // сбросить кнопки «Далее»
   document.getElementById('bonus-next-wrap').style.display = 'none';
+  document.getElementById('exam-next-wrap').style.display  = 'none';
   // запустить таймер для новой карточки (не перевёрнутой)
   if (!revealed) startTimer();
 
@@ -2557,7 +2564,7 @@ function renderProgressMap() {
 ================================================================ */
 let timerMode = false;
 let timerInterval = null;
-const TIMER_SECS = 15;
+const TIMER_SECS = 60;
 
 function startTimer() {
   stopTimer();
@@ -2567,9 +2574,11 @@ function startTimer() {
   const num  = document.getElementById('timer-num');
   const update = () => {
     fill.style.width = (remaining / TIMER_SECS * 100) + '%';
-    fill.style.background = remaining <= 4 ? '#e07878' : remaining <= 8 ? '#e8c44a' : 'var(--gold)';
-    num.textContent = remaining;
-    num.style.color = remaining <= 4 ? '#e07878' : 'var(--gold)';
+    fill.style.background = remaining <= 10 ? '#e07878' : remaining <= 20 ? '#e8c44a' : 'var(--gold)';
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    num.textContent = mins > 0 ? `${mins}:${String(secs).padStart(2,'0')}` : remaining;
+    num.style.color = remaining <= 10 ? '#e07878' : 'var(--gold)';
   };
   update();
   timerInterval = setInterval(() => {
@@ -2577,14 +2586,48 @@ function startTimer() {
     update();
     if (remaining <= 0) {
       stopTimer();
-      if (!revealed) {
-        onCardClick();
-        setTimeout(() => verdict('unknown'), 420);
-      } else {
-        verdict('unknown');
-      }
+      timerExpire();
     }
   }, 1000);
+}
+
+function timerExpire() {
+  // auto-mark unknown without auto-advancing
+  answers[idx] = 'unknown';
+  const allIdx = ALL.indexOf(cards[idx]);
+  if (allIdx >= 0) saveCardVerdict(allIdx, 'unknown');
+  // update counters & progress bar
+  const nK = answers.filter(a=>a==='known').length;
+  const nU = answers.filter(a=>a==='unknown').length;
+  document.getElementById('stat-k').textContent = '✓ ' + nK;
+  document.getElementById('stat-u').textContent = '✗ ' + nU;
+  document.getElementById('pfill').style.width = (answers.filter(a=>a!==null).length / cards.length * 100) + '%';
+  // hide verdict buttons
+  document.getElementById('verdict-wrap').classList.remove('show');
+  // flip to show answer, then show «Далее →»
+  const doShow = () => {
+    document.getElementById('exam-next-wrap').style.display = 'block';
+    if (window.MathJax) MathJax.typesetPromise([document.getElementById('bc-a')]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  if (!revealed) {
+    flipAnim(() => {
+      revealed = true;
+      document.getElementById('card').classList.add('flipped');
+      doShow();
+    });
+  } else {
+    doShow();
+  }
+}
+
+function examNext() {
+  document.getElementById('exam-next-wrap').style.display = 'none';
+  if (idx === cards.length - 1) {
+    showResults();
+  } else {
+    slideAnim(+1, () => { idx++; revealed = false; render(); });
+  }
 }
 
 function stopTimer() {
