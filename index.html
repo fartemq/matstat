@@ -46,15 +46,139 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   WELCOME SCREEN
+   WELCOME DASHBOARD
 ══════════════════════════════════════════ */
 #welcome {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  padding: 48px 20px 64px;
+  padding: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* ── Dashboard header ─────────────────── */
+.wd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px 16px;
+  border-bottom: 1px solid var(--bdr);
+  flex-shrink: 0;
+  background: rgba(0,0,0,.18);
+}
+.wd-eyebrow {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.53rem; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--gold); opacity:.5; display:block; margin-bottom:5px;
+}
+.wd-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.3rem,2.5vw,1.9rem); font-weight:600;
+  color:var(--parch); line-height:1.05; letter-spacing:.02em;
+}
+.wd-title em { font-style:italic; color:var(--gold); }
+.wd-timer {
+  text-align:right;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; color:var(--txt-dim); line-height:1.7;
+}
+.wd-time-val {
+  display:block; font-size:1.3rem; font-weight:500;
+  color:var(--gold); letter-spacing:.06em; line-height:1.1;
+}
+
+/* ── 3-column grid ────────────────────── */
+.wd-grid {
+  display: grid;
+  grid-template-columns: 230px 1fr 230px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Panels (left + right) ────────────── */
+.wd-panel {
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  opacity: 0;
+  animation: wd-in .45s cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay: var(--wd-delay, 0s);
+  overflow-y: auto;
+}
+.wd-panel-left  { border-right: 1px solid var(--bdr); }
+.wd-panel-right { border-left:  1px solid var(--bdr); }
+
+@keyframes wd-in {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Center action ────────────────────── */
+.wd-main {
+  padding: 28px 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  opacity: 0;
+  animation: wd-in .4s cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay: var(--wd-delay, 0s);
+}
+.wd-main .mode-grid   { max-width:100%; grid-template-columns:repeat(3,1fr); }
+.wd-main .start-btn   { width:100%; max-width:100%; margin-top:4px; }
+.wd-main .count-picker{ max-width:100%; }
+.wd-main .lec-picker  { max-width:100%; }
+.wd-main .w-section   { max-width:100%; margin-bottom:0; }
+
+/* ── Panel section block ──────────────── */
+.wd-ps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wd-ps-label {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.53rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--gold); opacity:.55;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--bdr);
+}
+
+/* ── Online names ─────────────────────── */
+.wd-online-names {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.65rem; color:var(--txt-dim);
+  line-height:1.7;
+}
+
+/* ── Mode button upgrades ─────────────── */
+.mode-btn {
+  position: relative;
+  overflow: hidden;
+}
+.mode-btn::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 120%, rgba(200,164,74,.18), transparent 70%);
+  opacity:0; transition:opacity .2s;
+  pointer-events:none;
+}
+.mode-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(200,164,74,.1); }
+.mode-btn:hover::after { opacity:1; }
+.mode-btn.active { box-shadow:0 0 0 1px var(--gold), 0 4px 16px rgba(200,164,74,.12); }
+
+/* ── Resume banner ────────────────────── */
+.resume-banner { border-radius:0; border-left:none; border-right:none; }
+
+/* ── Mobile breakpoint ────────────────── */
+@media (max-width: 860px) {
+  .wd-header { padding:14px 16px; }
+  .wd-grid   { grid-template-columns:1fr; }
+  .wd-panel-left  { border-right:none; border-top:1px solid var(--bdr); order:2; }
+  .wd-panel-right { border-left:none;  border-top:1px solid var(--bdr); order:3; }
+  .wd-main   { order:1; padding:20px 16px 28px; }
+  .wd-main .mode-grid { grid-template-columns:repeat(2,1fr); }
+  .wd-timer  { display:none; }
 }
 #app { display: none; flex-direction: column; align-items: center; padding: 34px 20px 64px; }
 #app.visible { display: flex; }
@@ -946,7 +1070,8 @@ h1 em { font-style:italic; color:var(--gold); }
      WELCOME SCREEN
 ══════════════════════════════════════ -->
 <div id="welcome" style="display:none">
-  <!-- Resume banner (shown if saved progress exists) -->
+
+  <!-- Resume banner (full-width, above grid) -->
   <div class="resume-banner" id="resume-banner">
     <div class="resume-top">
       <div class="resume-title" id="resume-title">Продолжить с прошлого раза?</div>
@@ -959,108 +1084,125 @@ h1 em { font-style:italic; color:var(--gold); }
     </div>
   </div>
 
-  <div class="w-eyebrow">Подготовка к экзамену · МАТ. СТАТ.</div>
-  <div class="w-title">Математическая <em>Статистика</em></div>
-  <div class="w-rule"></div>
-
-
-  <!-- Who is online -->
-  <div id="online-wrap" style="width:100%;max-width:440px;margin-bottom:16px;min-height:20px;display:none;">
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.12em;color:var(--gold);opacity:.7;" id="online-text"></span>
-  </div>
-
-  <!-- Inline leaderboard -->
-  <div class="lb-inline" id="lb-inline">
-    <div class="lb-inline-title">🏆 Топ &mdash; Случайный и Экзамен</div>
-    <div id="lb-inline-rows"><div class="lb-inline-empty">Загрузка…</div></div>
-  </div>
-
-  <!-- Зал позора -->
-  <div class="shame-section" id="shame-section">
-    <div class="shame-title">💀 Зал позора</div>
-    <div id="shame-rows"><div class="shame-empty">Загрузка…</div></div>
-  </div>
-
-
-  <!-- Name -->
-  <div class="w-section">
-    <label class="w-label" for="wname">Как вас зовут? <span style="color:#e07878">*</span></label>
-    <input class="w-input" id="wname" type="text" placeholder="Введите имя…" autocomplete="off" maxlength="40">
-    <div class="w-error-msg" id="name-error">Пожалуйста, введите имя</div>
-  </div>
-
-  <!-- Mode -->
-  <div class="w-section" style="max-width:560px">
-    <span class="w-label">Режим изучения</span>
-    <div class="mode-grid">
-      <button class="mode-btn active" data-mode="ordered" onclick="setMode(this)">
-        <span class="mico">📋</span>
-        <span class="mname">По порядку</span>
-        <span class="mhint">все 85 карточек</span>
-      </button>
-      <button class="mode-btn" data-mode="bonus" onclick="setMode(this)">
-        <span class="mico">🎲</span>
-        <span class="mname">Случайный режим</span>
-        <span class="mhint">испытание нервов</span>
-      </button>
-      <button class="mode-btn" data-mode="lecture" onclick="setMode(this)">
-        <span class="mico">📖</span>
-        <span class="mname">Лекция</span>
-        <span class="mhint">выбрать одну</span>
-      </button>
-      <button class="mode-btn" data-mode="study" onclick="setMode(this)">
-        <span class="mico">🎓</span>
-        <span class="mname">Учить</span>
-        <span class="mhint">конспект + тест</span>
-      </button>
-      <button class="mode-btn" id="weak-mode-btn" data-mode="weak" onclick="setMode(this)">
-        <span class="mico">🎯</span>
-        <span class="mname">Слабые места</span>
-        <span class="mhint" id="weak-hint">карточки где ошибся</span>
-      </button>
-      <button class="mode-btn mode-btn-wide" data-mode="exam" onclick="setMode(this)">
-        <span class="mico">⏱</span>
-        <div>
-          <span class="mname">Режим экзамена</span>
-          <span class="mhint">1 минута на вопрос · все 85</span>
-        </div>
-      </button>
+  <!-- Dashboard header -->
+  <header class="wd-header">
+    <div class="wd-brand">
+      <span class="wd-eyebrow">Подготовка к экзамену · МАТ. СТАТ.</span>
+      <div class="wd-title">Математическая <em>Статистика</em></div>
     </div>
-  </div>
+    <div class="wd-timer" id="wd-timer">
+      <span class="wd-time-val" id="wd-time-val">…</span>
+      <span>до экзамена</span>
+    </div>
+  </header>
 
-  <!-- Count picker (shown for ordered/exam/bonus modes) -->
-  <div class="count-picker" id="count-picker">
-    <span class="count-label">Сколько вопросов?</span>
-    <div class="slider-row">
-      <div class="count-value">
-        <span id="count-display">85</span>
-        <span>вопросов</span>
+  <!-- 3-column dashboard grid -->
+  <div class="wd-grid">
+
+    <!-- ── LEFT PANEL: Social stats ── -->
+    <aside class="wd-panel wd-panel-left" style="--wd-delay:.12s">
+
+      <div id="online-wrap" class="wd-ps" style="display:none">
+        <div class="wd-ps-label">● Онлайн сейчас</div>
+        <div id="online-text" class="wd-online-names"></div>
       </div>
-      <input class="count-range" id="count-range" type="range" min="1" max="85" value="85" oninput="onSlider(this)">
-    </div>
-    <div class="slider-bounds"><span>1</span><span id="count-max-label">85</span></div>
+
+      <div class="wd-ps">
+        <div class="wd-ps-label">🏆 Топ — Случайный и Экзамен</div>
+        <div id="lb-inline-rows"><div class="lb-inline-empty">Загрузка…</div></div>
+      </div>
+
+      <div class="wd-ps">
+        <div class="wd-ps-label">💀 Зал позора</div>
+        <div id="shame-rows"><div class="shame-empty">Загрузка…</div></div>
+      </div>
+
+    </aside>
+
+    <!-- ── CENTER: Action ── -->
+    <main class="wd-main" style="--wd-delay:.04s">
+
+      <div class="w-section">
+        <label class="w-label" for="wname">Как вас зовут? <span style="color:#e07878">*</span></label>
+        <input class="w-input" id="wname" type="text" placeholder="Введите имя…" autocomplete="off" maxlength="40">
+        <div class="w-error-msg" id="name-error">Пожалуйста, введите имя</div>
+      </div>
+
+      <div>
+        <span class="w-label">Режим изучения</span>
+        <div class="mode-grid">
+          <button class="mode-btn active" data-mode="ordered" onclick="setMode(this)">
+            <span class="mico">📋</span>
+            <span class="mname">По порядку</span>
+            <span class="mhint">все карточки</span>
+          </button>
+          <button class="mode-btn" data-mode="bonus" onclick="setMode(this)">
+            <span class="mico">🎲</span>
+            <span class="mname">Случайный</span>
+            <span class="mhint">испытание нервов</span>
+          </button>
+          <button class="mode-btn" data-mode="lecture" onclick="setMode(this)">
+            <span class="mico">📖</span>
+            <span class="mname">Лекция</span>
+            <span class="mhint">выбрать одну</span>
+          </button>
+          <button class="mode-btn" data-mode="study" onclick="setMode(this)">
+            <span class="mico">🎓</span>
+            <span class="mname">Учить</span>
+            <span class="mhint">конспект + тест</span>
+          </button>
+          <button class="mode-btn" id="weak-mode-btn" data-mode="weak" onclick="setMode(this)">
+            <span class="mico">🎯</span>
+            <span class="mname">Слабые места</span>
+            <span class="mhint" id="weak-hint">карточки где ошибся</span>
+          </button>
+          <button class="mode-btn mode-btn-wide" data-mode="exam" onclick="setMode(this)">
+            <span class="mico">⏱</span>
+            <div>
+              <span class="mname">Режим экзамена</span>
+              <span class="mhint">1 мин на вопрос</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="count-picker" id="count-picker">
+        <span class="count-label">Сколько вопросов?</span>
+        <div class="slider-row">
+          <div class="count-value">
+            <span id="count-display">85</span>
+            <span>вопросов</span>
+          </div>
+          <input class="count-range" id="count-range" type="range" min="1" max="85" value="85" oninput="onSlider(this)">
+        </div>
+        <div class="slider-bounds"><span>1</span><span id="count-max-label">85</span></div>
+      </div>
+
+      <div class="lec-picker" id="lec-picker">
+        <div class="lec-grid" id="lec-grid"></div>
+      </div>
+
+      <button class="start-btn" id="start-btn" onclick="startSession()">Начать →</button>
+
+    </main>
+
+    <!-- ── RIGHT PANEL: Progress ── -->
+    <aside class="wd-panel wd-panel-right" style="--wd-delay:.2s">
+
+      <div class="wd-ps prog-map" id="prog-map" style="display:none">
+        <div class="wd-ps-label">📈 Мой прогресс</div>
+        <div id="prog-rows"></div>
+        <button class="lb-link" onclick="resetProgress()" style="margin-top:6px">✕ Сбросить</button>
+      </div>
+
+      <div class="wd-ps" id="killers-section">
+        <div class="wd-ps-label">🔥 Убийцы группы</div>
+        <div id="killers-rows"><div class="lb-inline-empty">Загрузка…</div></div>
+      </div>
+
+    </aside>
+
   </div>
-
-  <!-- Lecture picker (shown when mode = lecture) -->
-  <div class="lec-picker" id="lec-picker">
-    <div class="lec-grid" id="lec-grid"></div>
-  </div>
-
-  <button class="start-btn" id="start-btn" onclick="startSession()">Начать →</button>
-
-  <!-- Progress map -->
-  <div class="w-section prog-map" id="prog-map" style="display:none; margin-top:28px;">
-    <span class="prog-map-title">Твой прогресс по лекциям</span>
-    <div id="prog-rows"></div>
-    <button class="lb-link" onclick="resetProgress()">✕ Сбросить прогресс</button>
-  </div>
-
-  <!-- Убийцы группы -->
-  <div class="w-section prog-map" id="killers-section" style="margin-top:24px;">
-    <span class="prog-map-title">📊 Убийцы группы — топ сложных вопросов</span>
-    <div id="killers-rows"><div class="lb-inline-empty">Загрузка…</div></div>
-  </div>
-
 </div>
 
 <!-- ══════════════════════════════════════
@@ -2344,6 +2486,20 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
+function updateWdTimer() {
+  const el = document.getElementById('wd-time-val');
+  if (!el) return;
+  const diff = EXAM_DATE - new Date();
+  if (diff <= 0) { el.textContent = '🎓'; return; }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  el.textContent = d > 0 ? `${d}д ${h}ч ${m}м` : h > 0 ? `${h}ч ${m}м ${s}с` : `${m}м ${s}с`;
+}
+updateWdTimer();
+setInterval(updateWdTimer, 1000);
+
 function showWelcome() {
   const splash = document.getElementById('splash');
   splash.style.transition = 'opacity .4s ease';
@@ -2837,7 +2993,7 @@ async function loadOnlineUsers() {
     const names = [...new Set(rows.map(r=>r.name).filter(Boolean))].slice(0,5);
     if (names.length === 0) { wrap.style.display='none'; return; }
     wrap.style.display = '';
-    el.textContent = '● Сейчас готовятся: ' + names.join(', ');
+    el.textContent = names.join(' · ');
   } catch { wrap.style.display='none'; }
 }
 
