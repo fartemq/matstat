@@ -1454,6 +1454,16 @@ h1 em { font-style:italic; color:var(--gold); }
 const SB_URL = 'https://iiovgiqcphbwpgvxpgll.supabase.co';
 const SB_KEY = 'sb_publishable_jl_i6rnAxF7nXXHdjnHGSQ_bQ1M9gJK';
 
+/* XSS protection — escape all user-supplied strings before innerHTML */
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
 function sbInsert(table, data) {
   fetch(`${SB_URL}/rest/v1/${table}`, {
     method: 'POST',
@@ -3164,7 +3174,7 @@ async function loadLeaderboard() {
     el.innerHTML = rows.map((row, i) => `
       <div class="lb-inline-row">
         <span class="lb-inline-rank">${medals[i]}</span>
-        <span class="lb-inline-name">${row.name || 'Аноним'}</span>
+        <span class="lb-inline-name">${escHtml(row.name) || 'Аноним'}</span>
         <span class="lb-inline-score">${row.known} из ${LB_TOTAL}</span>
       </div>`).join('');
   } catch {
@@ -3186,7 +3196,7 @@ async function openLeaderboard() {
     el.innerHTML = rows.map((row, i) => `
       <div class="lb-row">
         <span class="lb-rank">${medals[i] || (i+1)+'.'}</span>
-        <div class="lb-name">${row.name || 'Аноним'}
+        <div class="lb-name">${escHtml(row.name) || 'Аноним'}
           <small>Случайный / Экзамен</small>
         </div>
         <span class="lb-score">${row.known} из ${LB_TOTAL}</span>
@@ -3218,7 +3228,7 @@ async function loadHallOfShame() {
     el.innerHTML = rows.map((row, i) => `
       <div class="shame-row">
         <span class="shame-rank">${skulls[i]}</span>
-        <span class="shame-name">${row.name || 'Аноним'}</span>
+        <span class="shame-name">${escHtml(row.name) || 'Аноним'}</span>
         <span class="shame-score">${row.known}/${row.total}</span>
       </div>`).join('');
   } catch {
