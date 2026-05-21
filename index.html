@@ -949,7 +949,7 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mname">По порядку</span>
         <span class="mhint">все 85 карточек</span>
       </button>
-      <button class="mode-btn" onclick="startBonusTest()">
+      <button class="mode-btn" data-mode="bonus" onclick="setMode(this)">
         <span class="mico">🎲</span>
         <span class="mname">Случайный режим</span>
         <span class="mhint">испытание нервов</span>
@@ -972,6 +972,19 @@ h1 em { font-style:italic; color:var(--gold); }
         </div>
       </button>
     </div>
+  </div>
+
+  <!-- Count picker (shown for ordered/exam/bonus modes) -->
+  <div class="count-picker" id="count-picker">
+    <span class="count-label">Сколько вопросов?</span>
+    <div class="slider-row">
+      <div class="count-value">
+        <span id="count-display">85</span>
+        <span>вопросов</span>
+      </div>
+      <input class="count-range" id="count-range" type="range" min="1" max="85" value="85" oninput="onSlider(this)">
+    </div>
+    <div class="slider-bounds"><span>1</span><span id="count-max-label">85</span></div>
   </div>
 
   <!-- Lecture picker (shown when mode = lecture) -->
@@ -1314,6 +1327,15 @@ const ALL = [
 {lec:"Лекция 5. Сравнение двух совокупностей",
  q:"Статистика для проверки гипотезы о <em>равенстве дисперсий</em> двух генеральных совокупностей.",
  a:"$$F=\\frac{S^2_{\\max}}{S^2_{\\min}},$$ где $S^2_{\\max}=\\max(S_1^2,S_2^2)$, $S^2_{\\min}=\\min(S_1^2,S_2^2)$.<br>Если $H_0$ верна, $F\\sim F(n_{\\max}{-}1,\\,n_{\\min}{-}1)$."},
+{lec:"Лекция 5. Сравнение двух совокупностей",
+ q:"Сформулируйте задачу о проверке гипотезы о <em>равенстве средних значений</em> двух генеральных совокупностей.",
+ a:"Пусть $X_1\\sim N(\\mu_1,\\sigma_1)$ и $X_2\\sim N(\\mu_2,\\sigma_2)$, где $\\sigma_1^2$ и $\\sigma_2^2$ неизвестны, но равны ($\\sigma_1^2=\\sigma_2^2$). Из обеих совокупностей сделаны независимые выборки с параметрами $n_1,\\bar{X}_1,S_1^2$ и $n_2,\\bar{X}_2,S_2^2$. Требуется проверить гипотезу $H_0=\\{\\mu_1=\\mu_2\\}$.<br>Критическая область определяется в зависимости от вида $H_1$ ($\\mu_1<\\mu_2$; $\\mu_1>\\mu_2$; $\\mu_1\\neq\\mu_2$) с помощью таблиц распределения Стьюдента."},
+{lec:"Лекция 5. Сравнение двух совокупностей",
+ q:"Каковы <em>степени свободы F-критерия</em> при проверке гипотезы о равенстве дисперсий?",
+ a:"$$k_1=n_{\\max}-1,\\quad k_2=n_{\\min}-1,$$ где $n_{\\max}$ — объём выборки с большей исправленной дисперсией $S^2_{\\max}$, $n_{\\min}$ — с меньшей $S^2_{\\min}$."},
+{lec:"Лекция 5. Сравнение двух совокупностей",
+ q:"Как определяется <em>критическая область F-критерия</em> при двусторонней альтернативной гипотезе $H_1=\\{\\sigma_1^2\\neq\\sigma_2^2\\}$?",
+ a:"В силу специфики распределения Фишера–Снедекора используют <b>правостороннюю</b> критическую область, но по уровню значимости $\\dfrac{\\alpha}{2}$:<br>$$F_{\\text{кр}}=F_{\\text{кр}}\\!\\left(\\tfrac{\\alpha}{2};\\,k_1,k_2\\right).$$<br>Принять $H_0$, если $F < F_{\\text{кр}}$; отвергнуть, если $F \\geq F_{\\text{кр}}$."},
 // ── Лекция 6 ──────────────────────────────────────────────────
 {lec:"Лекция 6. Критерий согласия",
  q:"Что называется <em>критерием согласия</em>?",
@@ -1324,6 +1346,12 @@ const ALL = [
 {lec:"Лекция 6. Критерий согласия",
  q:"Опишите <em>алгоритм</em> проверки гипотезы о законе распределения ($\\chi^2$-Пирсона).",
  a:"<b>Этап 1.</b> Разбить область изменения СВ $X$ на $k$ интервалов.<br><b>Этап 2.</b> Найти эмпирические частоты $n_i$. Если $n_i<5$ — объединить с соседним.<br><b>Этап 3.</b> Вычислить вероятности $p_i$ по теоретическому закону ($\\sum p_i=1$).<br><b>Этап 4.</b> Найти теоретические частоты $m_i=np_i$.<br><b>Этап 5.</b> Составить таблицу.<br><b>Этап 6.</b> Вычислить $Q^2=\\sum(n_i-m_i)^2/m_i$.<br><b>Этап 7.</b> Найти $x_\\alpha$ из $P(Q^2>x_\\alpha)=\\alpha$ при $k-r-1$ ст.св.<br><b>Этап 8.</b> $Q^2\\in W$ → отвергнуть $H_0$; $Q^2\\notin W$ → принять $H_0$."},
+{lec:"Лекция 6. Критерий согласия",
+ q:"Сформулируйте <em>гипотезу о законе распределения</em>. Чем отличается теоретическая функция от эмпирической?",
+ a:"$H_0=\\{$генеральная совокупность (СВ $X$) имеет функцию распределения $F(x)\\}$.<br>Теоретическая $F(x)$ и эмпирическая $F^*(x)$ всегда различаются. Критерий согласия отвечает: объясняется ли это расхождение случайными обстоятельствами (малым объёмом выборки) или оно существенно (закон выбран неудачно)."},
+{lec:"Лекция 6. Критерий согласия",
+ q:"Что делать, если в некотором интервале частота $n_i<5$? Как поступают при дискретной СВ?",
+ a:"<b>Замечание 1.</b> Если в некотором интервале частота $n_i<5$, то этот интервал <b>объединяют с соседним</b>.<br><b>Замечание 2.</b> Если $X$ — дискретная СВ, то вместо интервалов берут сами значения СВ или группы этих значений."},
 // ── Лекция 7 ──────────────────────────────────────────────────
 {lec:"Лекция 7. Дисперсионный анализ",
  q:"Что называется <em>уровнем фактора</em>?",
@@ -1388,6 +1416,12 @@ const ALL = [
 {lec:"Лекция 10. Ранговая корреляция",
  q:"Как проверить <em>значимость</em> коэффициента Спирмена?",
  a:"Статистика $t=\\dfrac{\\rho^*\\sqrt{n-2}}{\\sqrt{1-(\\rho^*)^2}}\\sim t(n-2)$ при верной $H_0$.<br>Коэффициент $\\rho^*$ значим, если $|t|>t_{\\text{кр}}(\\alpha,n-2)$ (двусторонняя крит. область)."},
+{lec:"Лекция 10. Ранговая корреляция",
+ q:"Что называется <em>рангом</em> объекта? Как строится ранговая таблица?",
+ a:"Каждому объекту при ранжировании присваивается определённый номер — <b>ранг</b>. Объекту с наименьшим значением признака присваивается ранг 1, следующему — ранг 2 и т.д. Для двух признаков $X$ и $Y$ получают две последовательности рангов объектов выборки: $r_1,r_2,\\ldots,r_n$ и $s_1,s_2,\\ldots,s_n$."},
+{lec:"Лекция 10. Ранговая корреляция",
+ q:"Как присваиваются ранги, если несколько объектов имеют <em>одинаковое качество</em>?",
+ a:"Каждому из них приписывается <b>средний ранг</b>. Например, если четыре объекта оказались равнозначными и им следует присвоить ранги 4, 5, 6, 7, то каждому приписывается средний ранг $\\dfrac{4+5+6+7}{4}=5{,}5$."},
 // ── Лекция 11 ─────────────────────────────────────────────────
 {lec:"Лекция 11. Моделирование СВ",
  q:"Что называется <em>моделированием</em>?",
@@ -1442,13 +1476,37 @@ LECS.forEach((l,i) => {
   grid.appendChild(btn);
 });
 
+let chosenCount = ALL.length;
+
+function onSlider(input) {
+  chosenCount = parseInt(input.value);
+  document.getElementById('count-display').textContent = chosenCount;
+  const maxN = parseInt(input.max);
+  const pct = (chosenCount - 1) / (maxN - 1) * 100;
+  input.style.setProperty('--fill', pct + '%');
+}
+
 function setMode(btn) {
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   chosenMode = btn.dataset.mode;
 
-  const lecPicker = document.getElementById('lec-picker');
-  lecPicker.classList.toggle('open', chosenMode === 'lecture');
+  const lecPicker   = document.getElementById('lec-picker');
+  const countPicker = document.getElementById('count-picker');
+  const showCount   = ['ordered','exam','bonus'].includes(chosenMode);
+
+  lecPicker.classList.toggle('open',   chosenMode === 'lecture');
+  countPicker.classList.toggle('open', showCount);
+
+  if (showCount) {
+    const r = document.getElementById('count-range');
+    r.max = ALL.length;
+    if (chosenCount > ALL.length) chosenCount = ALL.length;
+    r.value = chosenCount;
+    onSlider(r);
+    const ml = document.getElementById('count-max-label');
+    if (ml) ml.textContent = ALL.length;
+  }
 
   if (chosenMode !== 'lecture') {
     chosenLec = null;
@@ -1456,15 +1514,6 @@ function setMode(btn) {
   }
   updateStartBtn();
 }
-
-// ── patch setMode to handle 'exam' (no lec picker needed) ────────
-const _origSetModeExam = setMode;
-window.setMode = function(btn) {
-  _origSetModeExam(btn);
-  if (btn.dataset.mode === 'exam') {
-    document.getElementById('lec-picker').classList.remove('open');
-  }
-};
 
 /* ================================================================
    STUDY + QUIZ MODE
@@ -1774,9 +1823,14 @@ function startSession() {
 
   // Build deck
   if (chosenMode === 'ordered') {
-    cards = [...ALL];
+    cards = [...ALL].slice(0, chosenCount);
   } else if (chosenMode === 'exam') {
     cards = [...ALL]; shuffleArr(cards);
+    cards = cards.slice(0, chosenCount);
+  } else if (chosenMode === 'bonus') {
+    bonusMode = true;
+    cards = [...ALL]; shuffleArr(cards);
+    cards = cards.slice(0, chosenCount);
   } else {
     cards = ALL.filter(c=>c.lec===chosenLec);
   }
@@ -1805,6 +1859,7 @@ function startSession() {
   document.getElementById('app-eyebrow').textContent =
     chosenMode === 'lecture' ? chosenLec
     : chosenMode === 'exam'  ? '⏱ Режим экзамена'
+    : chosenMode === 'bonus' ? 'Случайный режим 🎲'
     : 'Все лекции по порядку';
 
   // Transition
@@ -1822,7 +1877,9 @@ function startSession() {
       app.style.opacity = '1';
       // set progress label from chosen mode
       const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.')
-        : chosenMode==='exam' ? '⏱ Экзамен' : 'Все лекции';
+        : chosenMode==='exam'  ? '⏱ Экзамен'
+        : chosenMode==='bonus' ? '🎲 Случайный'
+        : 'Все лекции';
       document.getElementById('plec').textContent = modeLabel;
       render();
     }));
@@ -2231,6 +2288,9 @@ function showWelcome() {
       checkResume();
       renderProgressMap();
       loadLeaderboard();
+      // init count picker for default ordered mode
+      const _r = document.getElementById('count-range');
+      if (_r) { chosenCount = ALL.length; _r.max = ALL.length; _r.value = ALL.length; onSlider(_r); const _ml = document.getElementById('count-max-label'); if (_ml) _ml.textContent = ALL.length; document.getElementById('count-picker').classList.add('open'); }
     }));
   }, 400);
 }
@@ -2637,7 +2697,7 @@ function stopTimer() {
 /* ================================================================
    LEADERBOARD — inline top-5 (bonus mode only)
 ================================================================ */
-const LB_TOTAL = 74; // эталонный размер колоды случайного режима
+const LB_TOTAL = 85; // эталонный размер колоды случайного режима
 
 async function fetchLbRows(limit) {
   const r = await fetch(
