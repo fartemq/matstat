@@ -594,7 +594,109 @@ h1 em { font-style:italic; color:var(--gold); }
 .sp-btn:hover { background:var(--gold-lt); transform:translateY(-2px); }
 
 /* ══════════════════════════════════════════
-   БОНУСНЫЙ ТЕСТ BUTTON (в mode-grid, span 2)
+   WIDE MODE BUTTON (spans 2 cols)
+══════════════════════════════════════════ */
+.mode-btn-wide {
+  grid-column: span 2;
+  display:flex !important; align-items:center; gap:14px; text-align:left !important;
+}
+.mode-btn-wide .mico { font-size:1.3rem; flex-shrink:0; }
+
+/* ══════════════════════════════════════════
+   TIMER BAR (exam mode)
+══════════════════════════════════════════ */
+#timer-bar-wrap {
+  width:100%; max-width:680px; display:none;
+  align-items:center; gap:12px; margin-bottom:10px;
+}
+#timer-bar-wrap.active { display:flex; }
+#timer-track {
+  flex:1; height:5px; background:rgba(255,255,255,.08);
+  border-radius:3px; overflow:hidden;
+}
+#timer-fill {
+  height:100%; background:var(--gold); border-radius:3px;
+  transition:width .08s linear, background .3s;
+}
+#timer-num {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.8rem; color:var(--gold); min-width:26px; text-align:right;
+}
+
+/* ══════════════════════════════════════════
+   PROGRESS MAP (welcome screen)
+══════════════════════════════════════════ */
+.prog-map {
+  width:100%; max-width:560px; margin-top:4px; padding-top:4px;
+}
+.prog-map-title {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.65; display:block; margin-bottom:14px;
+}
+.prog-row {
+  display:flex; align-items:center; gap:10px; margin-bottom:9px;
+}
+.prog-lname {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.58rem; color:var(--txt-dim); min-width:28px; flex-shrink:0;
+}
+.prog-track {
+  flex:1; height:5px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden;
+}
+.prog-fill { height:100%; border-radius:3px; transition:width .5s ease, background .5s; }
+.prog-pct {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.58rem; color:var(--txt-dim); min-width:34px; text-align:right;
+}
+
+/* ══════════════════════════════════════════
+   LEADERBOARD OVERLAY
+══════════════════════════════════════════ */
+#lb-overlay {
+  position:fixed; inset:0; z-index:300;
+  background:rgba(0,0,0,.78); backdrop-filter:blur(5px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#lb-overlay.open { display:flex; }
+.lb-panel {
+  background:#1a1710; border:1px solid var(--bdr-hi);
+  border-radius:8px; padding:32px 28px; max-width:480px; width:100%;
+  max-height:85vh; overflow-y:auto;
+}
+.lb-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem; font-weight:600; color:var(--parch); margin-bottom:6px;
+}
+.lb-subtitle {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.58rem; letter-spacing:.15em; color:var(--txt-dim); margin-bottom:22px; display:block;
+}
+.lb-row {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--bdr);
+}
+.lb-rank { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--gold); min-width:24px; }
+.lb-name { flex:1; color:var(--parch); font-size:.92rem; }
+.lb-name small { display:block; font-size:.62rem; color:var(--txt-dim); margin-top:2px; }
+.lb-score { font-family:'IBM Plex Mono',monospace; font-size:.85rem; color:var(--gold); font-weight:500; }
+.lb-close {
+  margin-top:20px; width:100%;
+  background:transparent; border:1px solid var(--bdr); color:var(--txt);
+  padding:12px; border-radius:5px; font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem; cursor:pointer; transition:border-color .2s, color .2s;
+}
+.lb-close:hover { border-color:var(--gold); color:var(--parch); }
+.lb-link {
+  background:none; border:none; color:var(--txt-dim); cursor:pointer;
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem; letter-spacing:.1em;
+  text-transform:uppercase; margin-top:18px; text-decoration:underline;
+  text-underline-offset:3px; transition:color .2s;
+}
+.lb-link:hover { color:var(--gold); }
+
+/* ══════════════════════════════════════════
+   БОНУСНЫЙ ТЕСТ BUTTON (legacy, kept for compat)
 ══════════════════════════════════════════ */
 .mode-btn-bonus {
   grid-column: span 2;
@@ -825,6 +927,13 @@ h1 em { font-style:italic; color:var(--gold); }
         <span class="mname">Учить</span>
         <span class="mhint">конспект + тест</span>
       </button>
+      <button class="mode-btn mode-btn-wide" data-mode="exam" onclick="setMode(this)">
+        <span class="mico">⏱</span>
+        <div>
+          <span class="mname">Режим экзамена</span>
+          <span class="mhint">15 сек на карточку · все 85</span>
+        </div>
+      </button>
     </div>
   </div>
 
@@ -834,6 +943,16 @@ h1 em { font-style:italic; color:var(--gold); }
   </div>
 
   <button class="start-btn" id="start-btn" onclick="startSession()">Начать →</button>
+
+  <!-- Progress map -->
+  <div class="w-section prog-map" id="prog-map" style="display:none; margin-top:28px;">
+    <span class="prog-map-title">Твой прогресс по лекциям</span>
+    <div id="prog-rows"></div>
+    <button class="lb-link" onclick="resetProgress()">✕ Сбросить прогресс</button>
+  </div>
+
+  <!-- Leaderboard link -->
+  <button class="lb-link" onclick="openLeaderboard()" style="margin-top:14px;">🏆 Таблица лидеров</button>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -857,6 +976,12 @@ h1 em { font-style:italic; color:var(--gold); }
         <span id="pnum">1 / 85</span>
       </div>
     </div>
+  </div>
+
+  <!-- Timer bar (exam mode) -->
+  <div id="timer-bar-wrap">
+    <div id="timer-track"><div id="timer-fill" style="width:100%"></div></div>
+    <span id="timer-num">15</span>
   </div>
 
   <div class="card-wrap">
@@ -1291,6 +1416,15 @@ function setMode(btn) {
   updateStartBtn();
 }
 
+// ── patch setMode to handle 'exam' (no lec picker needed) ────────
+const _origSetModeExam = setMode;
+window.setMode = function(btn) {
+  _origSetModeExam(btn);
+  if (btn.dataset.mode === 'exam') {
+    document.getElementById('lec-picker').classList.remove('open');
+  }
+};
+
 /* ================================================================
    STUDY + QUIZ MODE
 ================================================================ */
@@ -1600,11 +1734,17 @@ function startSession() {
   // Build deck
   if (chosenMode === 'ordered') {
     cards = [...ALL];
+  } else if (chosenMode === 'exam') {
+    cards = [...ALL]; shuffleArr(cards);
   } else {
     cards = ALL.filter(c=>c.lec===chosenLec);
   }
   idx = 0; revealed = false;
   answers = new Array(cards.length).fill(null);
+
+  // Timer mode
+  timerMode = (chosenMode === 'exam');
+  document.getElementById('timer-bar-wrap').classList.toggle('active', timerMode);
 
   // Track visit (device info + async location)
   const devInfo = getDeviceInfo();
@@ -1622,7 +1762,9 @@ function startSession() {
   // Greeting
   document.getElementById('app-greeting').textContent = 'Удачи, ' + name + '!';
   document.getElementById('app-eyebrow').textContent =
-    chosenMode === 'lecture' ? chosenLec : 'Все лекции по порядку';
+    chosenMode === 'lecture' ? chosenLec
+    : chosenMode === 'exam'  ? '⏱ Режим экзамена'
+    : 'Все лекции по порядку';
 
   // Transition
   const welcome = document.getElementById('welcome');
@@ -1638,7 +1780,8 @@ function startSession() {
       app.style.transition = 'opacity .4s ease';
       app.style.opacity = '1';
       // set progress label from chosen mode
-      const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.') : 'Все лекции';
+      const modeLabel = chosenMode==='lecture' ? chosenLec.replace('Лекция ','Л.')
+        : chosenMode==='exam' ? '⏱ Экзамен' : 'Все лекции';
       document.getElementById('plec').textContent = modeLabel;
       render();
     }));
@@ -1646,6 +1789,10 @@ function startSession() {
 }
 
 function goBack() {
+  stopTimer();
+  timerMode = false;
+  document.getElementById('timer-bar-wrap').classList.remove('active');
+
   const app = document.getElementById('app');
   const res = document.getElementById('results');
   // hide whichever is showing
@@ -1659,6 +1806,7 @@ function goBack() {
     [app, res].forEach(el=>{ el.style.opacity=''; el.style.transition=''; });
     app.style.opacity = '';
     app.style.transition = '';
+    renderProgressMap();
     const w = document.getElementById('welcome');
     w.style.display = 'flex';
     w.style.opacity = '0';
@@ -1683,6 +1831,8 @@ let answers = []; // 'known' | 'unknown' | null  — per card in current deck
 function render() {
   // сбросить кнопку «Далее» бонусного теста
   document.getElementById('bonus-next-wrap').style.display = 'none';
+  // запустить таймер для новой карточки (не перевёрнутой)
+  if (!revealed) startTimer();
 
   const c = cards[idx];
   document.getElementById('fc-lec').textContent = c.lec;
@@ -1761,6 +1911,7 @@ function flipAnim(callback) {
 
 function onCardClick() {
   if (bonusMode) return; // в бонусном режиме карточка не переворачивается вручную
+  stopTimer(); // пользователь успел открыть карточку — таймер стоп
   flipAnim(()=>{
     revealed = !revealed;
     const card = document.getElementById('card');
@@ -2035,6 +2186,7 @@ function showWelcome() {
       w.style.transition = 'opacity .4s ease';
       w.style.opacity    = '1';
       checkResume();
+      renderProgressMap();
     }));
   }, 400);
 }
@@ -2307,8 +2459,12 @@ function resumeSession() {
 // save on every verdict
 const _origVerdict = verdict;
 window.verdict = function(type) {
+  stopTimer();
+  // save card progress (by index in ALL)
+  const allIdx = ALL.indexOf(cards[idx]);
+  if (allIdx >= 0) saveCardVerdict(allIdx, type);
   _origVerdict(type);
-  // save after state update (next tick)
+  // save session progress (next tick)
   setTimeout(saveProgress, 50);
 };
 
@@ -2318,6 +2474,120 @@ window.showResults = function() {
   clearSaved();
   _origShowResults();
 };
+
+/* ================================================================
+   PROGRESS MAP — per-card verdict tracking
+================================================================ */
+const CARD_KEY = 'matstat_card_verdicts';
+
+function loadVerdicts() {
+  try { return JSON.parse(localStorage.getItem(CARD_KEY)) || {}; } catch { return {}; }
+}
+function saveCardVerdict(allIdx, type) {
+  const v = loadVerdicts();
+  v[allIdx] = type;
+  localStorage.setItem(CARD_KEY, JSON.stringify(v));
+}
+function resetProgress() {
+  if (!confirm('Сбросить весь прогресс по лекциям?')) return;
+  localStorage.removeItem(CARD_KEY);
+  renderProgressMap();
+}
+function renderProgressMap() {
+  const verdicts = loadVerdicts();
+  const mapEl = document.getElementById('prog-map');
+  if (!mapEl) return;
+  if (Object.keys(verdicts).length === 0) { mapEl.style.display = 'none'; return; }
+  mapEl.style.display = '';
+  const rows = document.getElementById('prog-rows');
+  rows.innerHTML = LECS.map((lec, li) => {
+    const lecCards = ALL.map((c,i)=>({c,i})).filter(({c})=>c.lec===lec);
+    const total = lecCards.length;
+    const known = lecCards.filter(({i})=>verdicts[i]==='known').length;
+    const pct = Math.round(known / total * 100);
+    const color = pct===100 ? '#7ecb7e' : pct>=60 ? 'var(--gold)' : pct>0 ? '#e8a84a' : 'rgba(255,255,255,.08)';
+    return `<div class="prog-row">
+      <span class="prog-lname">Л.${li+1}</span>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="prog-pct">${known}/${total}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ================================================================
+   TIMER MODE — 15 seconds per card
+================================================================ */
+let timerMode = false;
+let timerInterval = null;
+const TIMER_SECS = 15;
+
+function startTimer() {
+  stopTimer();
+  if (!timerMode) return;
+  let remaining = TIMER_SECS;
+  const fill = document.getElementById('timer-fill');
+  const num  = document.getElementById('timer-num');
+  const update = () => {
+    fill.style.width = (remaining / TIMER_SECS * 100) + '%';
+    fill.style.background = remaining <= 4 ? '#e07878' : remaining <= 8 ? '#e8c44a' : 'var(--gold)';
+    num.textContent = remaining;
+    num.style.color = remaining <= 4 ? '#e07878' : 'var(--gold)';
+  };
+  update();
+  timerInterval = setInterval(() => {
+    remaining--;
+    update();
+    if (remaining <= 0) {
+      stopTimer();
+      if (!revealed) {
+        onCardClick();
+        setTimeout(() => verdict('unknown'), 420);
+      } else {
+        verdict('unknown');
+      }
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+/* ================================================================
+   LEADERBOARD
+================================================================ */
+async function openLeaderboard() {
+  document.getElementById('lb-overlay').classList.add('open');
+  const el = document.getElementById('lb-rows');
+  el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Загрузка…</div>';
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/results?select=name,score_pct,mode,total,known&order=score_pct.desc&limit=10`,
+      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Пока нет результатов</div>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉'];
+    const modeLabel = {ordered:'По порядку', bonus:'Случайный', lecture:'Лекция', exam:'Экзамен', study_quiz:'Учить'};
+    el.innerHTML = rows.map((row, i) => `
+      <div class="lb-row">
+        <span class="lb-rank">${medals[i] || (i+1)+'.'}  </span>
+        <div class="lb-name">${row.name || 'Аноним'}
+          <small>${modeLabel[row.mode]||row.mode} · ${row.known}/${row.total} карточек</small>
+        </div>
+        <span class="lb-score">${row.score_pct}%</span>
+      </div>`).join('');
+  } catch {
+    el.innerHTML = '<div style="color:#e07878;font-size:.85rem;padding:8px 0">Не удалось загрузить</div>';
+  }
+}
+
+function closeLb() {
+  document.getElementById('lb-overlay').classList.remove('open');
+}
 
 // checkResume() вызывается из showWelcome() при переходе с экрана таймера
 
@@ -2361,6 +2631,18 @@ window.showResults = function() {
   }, {passive:true});
 })();
 </script>
+
+<!-- ══════════════════════════════════════
+     LEADERBOARD OVERLAY
+══════════════════════════════════════ -->
+<div id="lb-overlay" onclick="if(event.target===this)closeLb()">
+  <div class="lb-panel">
+    <div class="lb-title">🏆 Таблица лидеров</div>
+    <span class="lb-subtitle">Топ-10 лучших результатов</span>
+    <div id="lb-rows"><div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Загрузка…</div></div>
+    <button class="lb-close" onclick="closeLb()">✕ Закрыть</button>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════
      STUDY SCREEN
