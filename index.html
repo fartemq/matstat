@@ -882,57 +882,6 @@ h1 em { font-style:italic; color:var(--gold); }
 .qr-wrong-correct { color:#7ecb7e; font-size:.86rem; line-height:1.6; margin-bottom:3px; }
 .qr-wrong-your    { color:#e07878; font-size:.82rem; line-height:1.5; }
 
-/* ══════════════════════════════════════════
-   TICKET PREDICTION OVERLAY
-══════════════════════════════════════════ */
-#ticket-overlay {
-  position:fixed; inset:0; z-index:400;
-  background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
-  display:none; align-items:center; justify-content:center; padding:20px;
-}
-#ticket-overlay.open { display:flex; }
-.ticket-panel {
-  background:#1a1710; border:1px solid var(--bdr-hi);
-  border-radius:8px; padding:32px 28px; max-width:560px; width:100%;
-  max-height:90vh; overflow-y:auto;
-}
-.ticket-eyebrow {
-  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
-  letter-spacing:.25em; text-transform:uppercase; color:var(--gold);
-  opacity:.65; display:block; margin-bottom:8px;
-}
-.ticket-title {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.5rem; font-weight:600; color:var(--parch); margin-bottom:4px;
-}
-.ticket-sub {
-  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
-  color:var(--txt-dim); margin-bottom:22px; display:block;
-}
-.ticket-q {
-  padding:12px 0; border-bottom:1px solid var(--bdr);
-  display:flex; gap:12px; align-items:flex-start;
-}
-.ticket-q:last-child { border-bottom:none; }
-.ticket-num {
-  font-family:'IBM Plex Mono',monospace; font-size:.7rem;
-  color:var(--gold); min-width:20px; flex-shrink:0; margin-top:2px;
-}
-.ticket-qtext { font-size:.92rem; color:var(--txt); line-height:1.5; }
-.ticket-lec { font-family:'IBM Plex Mono',monospace; font-size:.58rem; color:var(--txt-dim); margin-top:3px; display:block; }
-.ticket-disclaimer {
-  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
-  color:var(--txt-dim); margin-top:18px; opacity:.5; text-align:center;
-}
-.ticket-btn {
-  width:100%; max-width:440px;
-  background:rgba(200,164,74,.08); border:1px solid var(--bdr-hi);
-  border-radius:6px; padding:14px 20px; margin-bottom:28px;
-  font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600;
-  color:var(--gold-lt); cursor:pointer; transition:background .2s, border-color .2s;
-  text-align:left;
-}
-.ticket-btn:hover { background:rgba(200,164,74,.15); border-color:var(--gold); }
 
 /* ══════════════════════════════════════════
    ЗАЛ ПОЗОРА
@@ -1026,10 +975,6 @@ h1 em { font-style:italic; color:var(--gold); }
     <div id="shame-rows"><div class="shame-empty">Загрузка…</div></div>
   </div>
 
-  <!-- Ticket prediction button -->
-  <button class="ticket-btn" onclick="openTicketPrediction()">
-    🎰 Что спросит Виктор Анатольевич?
-  </button>
 
   <!-- Name -->
   <div class="w-section">
@@ -2890,23 +2835,6 @@ function closeLb() {
   document.getElementById('lb-overlay').classList.remove('open');
 }
 
-function openTicketPrediction() {
-  const shuffled = [...ALL].sort(() => Math.random() - .5).slice(0, 5);
-  const el = document.getElementById('ticket-questions');
-  el.innerHTML = shuffled.map((c, i) => `
-    <div class="ticket-q">
-      <span class="ticket-num">${i+1}.</span>
-      <div>
-        <div class="ticket-qtext">${c.q.replace(/<em>/g,'').replace(/<\/em>/g,'')}</div>
-        <span class="ticket-lec">${c.lec}</span>
-      </div>
-    </div>`).join('');
-  document.getElementById('ticket-overlay').classList.add('open');
-  if (window.MathJax) setTimeout(()=>MathJax.typesetPromise([el]), 50);
-}
-function closeTicket() {
-  document.getElementById('ticket-overlay').classList.remove('open');
-}
 
 async function loadHallOfShame() {
   const el = document.getElementById('shame-rows');
@@ -3084,17 +3012,6 @@ async function loadHardestCards() {
   </div>
 </div>
 
-<!-- TICKET PREDICTION OVERLAY -->
-<div id="ticket-overlay" onclick="if(event.target===this)closeTicket()">
-  <div class="ticket-panel">
-    <span class="ticket-eyebrow">нейросеть · gpt-матстат-7</span>
-    <div class="ticket-title">🎰 Твой билет на экзамене</div>
-    <span class="ticket-sub">Виктор Анатольевич уже распечатал</span>
-    <div id="ticket-questions"></div>
-    <div class="ticket-disclaimer">* точность прогноза: 50/50. Либо будет, либо нет.</div>
-    <button class="lb-close" onclick="closeTicket()" style="margin-top:16px">✕ Закрыть</button>
-  </div>
-</div>
 
 <!-- Reaction overlay (бонусный тест) -->
 <div id="reaction-overlay">
