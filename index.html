@@ -624,6 +624,37 @@ h1 em { font-style:italic; color:var(--gold); }
 }
 
 /* ══════════════════════════════════════════
+   INLINE LEADERBOARD (welcome screen top)
+══════════════════════════════════════════ */
+.lb-inline {
+  width:100%; max-width:440px; margin-bottom:28px;
+}
+.lb-inline-title {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); opacity:.7; display:flex; align-items:center;
+  gap:8px; margin-bottom:12px;
+}
+.lb-inline-row {
+  display:flex; align-items:center; gap:10px;
+  padding:7px 0; border-bottom:1px solid rgba(200,164,74,.1);
+}
+.lb-inline-row:last-child { border-bottom:none; }
+.lb-inline-rank {
+  font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+  color:var(--gold); min-width:22px; flex-shrink:0;
+}
+.lb-inline-name { flex:1; color:var(--txt); font-size:.88rem; }
+.lb-inline-score {
+  font-family:'IBM Plex Mono',monospace; font-size:.75rem;
+  color:var(--gold); font-weight:500;
+}
+.lb-inline-empty {
+  font-family:'IBM Plex Mono',monospace; font-size:.62rem;
+  color:var(--txt-dim); padding:4px 0;
+}
+
+/* ══════════════════════════════════════════
    PROGRESS MAP (welcome screen)
 ══════════════════════════════════════════ */
 .prog-map {
@@ -896,6 +927,12 @@ h1 em { font-style:italic; color:var(--gold); }
   <div class="w-title">Математическая <em>Статистика</em></div>
   <div class="w-rule"></div>
 
+  <!-- Inline leaderboard -->
+  <div class="lb-inline" id="lb-inline">
+    <div class="lb-inline-title">🏆 Топ &mdash; Случайный режим</div>
+    <div id="lb-inline-rows"><div class="lb-inline-empty">Загрузка…</div></div>
+  </div>
+
   <!-- Name -->
   <div class="w-section">
     <label class="w-label" for="wname">Как вас зовут? <span style="color:#e07878">*</span></label>
@@ -951,8 +988,6 @@ h1 em { font-style:italic; color:var(--gold); }
     <button class="lb-link" onclick="resetProgress()">✕ Сбросить прогресс</button>
   </div>
 
-  <!-- Leaderboard link -->
-  <button class="lb-link" onclick="openLeaderboard()" style="margin-top:14px;">🏆 Таблица лидеров</button>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -1807,6 +1842,7 @@ function goBack() {
     app.style.opacity = '';
     app.style.transition = '';
     renderProgressMap();
+    loadLeaderboard();
     const w = document.getElementById('welcome');
     w.style.display = 'flex';
     w.style.opacity = '0';
@@ -2187,6 +2223,7 @@ function showWelcome() {
       w.style.opacity    = '1';
       checkResume();
       renderProgressMap();
+      loadLeaderboard();
     }));
   }, 400);
 }
@@ -2258,6 +2295,7 @@ function startBonusTest() {
   document.getElementById('name-error').classList.remove('visible');
 
   bonusMode = true;
+  chosenMode = 'bonus';
   cards   = [...ALL];
   shuffleArr(cards);
   answers = new Array(cards.length).fill(null);
@@ -2554,15 +2592,41 @@ function stopTimer() {
 }
 
 /* ================================================================
-   LEADERBOARD
+   LEADERBOARD — inline top-5 (bonus mode only)
 ================================================================ */
+async function loadLeaderboard() {
+  const el = document.getElementById('lb-inline-rows');
+  if (!el) return;
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=eq.bonus&order=score_pct.desc,known.desc&limit=5`,
+      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      el.innerHTML = '<div class="lb-inline-empty">Пока нет результатов — сыграй первым!</div>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉','4.','5.'];
+    el.innerHTML = rows.map((row, i) => `
+      <div class="lb-inline-row">
+        <span class="lb-inline-rank">${medals[i]}</span>
+        <span class="lb-inline-name">${row.name || 'Аноним'}</span>
+        <span class="lb-inline-score">${row.score_pct}%</span>
+      </div>`).join('');
+  } catch {
+    el.innerHTML = '<div class="lb-inline-empty">Не удалось загрузить</div>';
+  }
+}
+
+/* overlay leaderboard (kept for compat) */
 async function openLeaderboard() {
   document.getElementById('lb-overlay').classList.add('open');
   const el = document.getElementById('lb-rows');
   el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Загрузка…</div>';
   try {
     const r = await fetch(
-      `${SB_URL}/rest/v1/results?select=name,score_pct,mode,total,known&order=score_pct.desc&limit=10`,
+      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=eq.bonus&order=score_pct.desc,known.desc&limit=10`,
       { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
     );
     const rows = await r.json();
@@ -2571,12 +2635,11 @@ async function openLeaderboard() {
       return;
     }
     const medals = ['🥇','🥈','🥉'];
-    const modeLabel = {ordered:'По порядку', bonus:'Случайный', lecture:'Лекция', exam:'Экзамен', study_quiz:'Учить'};
     el.innerHTML = rows.map((row, i) => `
       <div class="lb-row">
-        <span class="lb-rank">${medals[i] || (i+1)+'.'}  </span>
+        <span class="lb-rank">${medals[i] || (i+1)+'.'}</span>
         <div class="lb-name">${row.name || 'Аноним'}
-          <small>${modeLabel[row.mode]||row.mode} · ${row.known}/${row.total} карточек</small>
+          <small>Случайный · ${row.known}/${row.total} карточек</small>
         </div>
         <span class="lb-score">${row.score_pct}%</span>
       </div>`).join('');
