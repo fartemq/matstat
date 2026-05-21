@@ -929,7 +929,7 @@ h1 em { font-style:italic; color:var(--gold); }
 
   <!-- Inline leaderboard -->
   <div class="lb-inline" id="lb-inline">
-    <div class="lb-inline-title">🏆 Топ &mdash; Случайный режим</div>
+    <div class="lb-inline-title">🏆 Топ &mdash; Случайный и Экзамен</div>
     <div id="lb-inline-rows"><div class="lb-inline-empty">Загрузка…</div></div>
   </div>
 
@@ -2701,7 +2701,7 @@ const LB_TOTAL = 85; // эталонный размер колоды случа�
 
 async function fetchLbRows(limit) {
   const r = await fetch(
-    `${SB_URL}/rest/v1/results?select=name,known&mode=in.(bonus,random)&order=known.desc&limit=${limit}`,
+    `${SB_URL}/rest/v1/results?select=name,known&mode=in.(bonus,random,exam)&order=known.desc&limit=${limit}`,
     { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
   );
   return r.json();
@@ -2743,7 +2743,7 @@ async function openLeaderboard() {
       <div class="lb-row">
         <span class="lb-rank">${medals[i] || (i+1)+'.'}</span>
         <div class="lb-name">${row.name || 'Аноним'}
-          <small>Случайный режим</small>
+          <small>Случайный / Экзамен</small>
         </div>
         <span class="lb-score">${row.known} из ${LB_TOTAL}</span>
       </div>`).join('');
