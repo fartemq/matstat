@@ -881,6 +881,93 @@ h1 em { font-style:italic; color:var(--gold); }
 }
 .qr-wrong-correct { color:#7ecb7e; font-size:.86rem; line-height:1.6; margin-bottom:3px; }
 .qr-wrong-your    { color:#e07878; font-size:.82rem; line-height:1.5; }
+
+/* ══════════════════════════════════════════
+   TICKET PREDICTION OVERLAY
+══════════════════════════════════════════ */
+#ticket-overlay {
+  position:fixed; inset:0; z-index:400;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#ticket-overlay.open { display:flex; }
+.ticket-panel {
+  background:#1a1710; border:1px solid var(--bdr-hi);
+  border-radius:8px; padding:32px 28px; max-width:560px; width:100%;
+  max-height:90vh; overflow-y:auto;
+}
+.ticket-eyebrow {
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
+  letter-spacing:.25em; text-transform:uppercase; color:var(--gold);
+  opacity:.65; display:block; margin-bottom:8px;
+}
+.ticket-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem; font-weight:600; color:var(--parch); margin-bottom:4px;
+}
+.ticket-sub {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  color:var(--txt-dim); margin-bottom:22px; display:block;
+}
+.ticket-q {
+  padding:12px 0; border-bottom:1px solid var(--bdr);
+  display:flex; gap:12px; align-items:flex-start;
+}
+.ticket-q:last-child { border-bottom:none; }
+.ticket-num {
+  font-family:'IBM Plex Mono',monospace; font-size:.7rem;
+  color:var(--gold); min-width:20px; flex-shrink:0; margin-top:2px;
+}
+.ticket-qtext { font-size:.92rem; color:var(--txt); line-height:1.5; }
+.ticket-lec { font-family:'IBM Plex Mono',monospace; font-size:.58rem; color:var(--txt-dim); margin-top:3px; display:block; }
+.ticket-disclaimer {
+  font-family:'IBM Plex Mono',monospace; font-size:.58rem;
+  color:var(--txt-dim); margin-top:18px; opacity:.5; text-align:center;
+}
+.ticket-btn {
+  width:100%; max-width:440px;
+  background:rgba(200,164,74,.08); border:1px solid var(--bdr-hi);
+  border-radius:6px; padding:14px 20px; margin-bottom:28px;
+  font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600;
+  color:var(--gold-lt); cursor:pointer; transition:background .2s, border-color .2s;
+  text-align:left;
+}
+.ticket-btn:hover { background:rgba(200,164,74,.15); border-color:var(--gold); }
+
+/* ══════════════════════════════════════════
+   ЗАЛ ПОЗОРА
+══════════════════════════════════════════ */
+.shame-section {
+  width:100%; max-width:440px; margin-bottom:20px;
+}
+.shame-title {
+  font-family:'IBM Plex Mono',monospace; font-size:.6rem;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:#e07878; opacity:.7; display:flex; align-items:center;
+  gap:8px; margin-bottom:12px;
+}
+.shame-row {
+  display:flex; align-items:center; gap:10px;
+  padding:6px 0; border-bottom:1px solid rgba(224,120,120,.1);
+}
+.shame-row:last-child { border-bottom:none; }
+.shame-rank { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:#e07878; min-width:22px; }
+.shame-name { flex:1; color:var(--txt); font-size:.88rem; }
+.shame-score { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:#e07878; }
+.shame-empty { font-family:'IBM Plex Mono',monospace; font-size:.62rem; color:var(--txt-dim); padding:4px 0; }
+
+/* ══════════════════════════════════════════
+   KILLER ROWS
+══════════════════════════════════════════ */
+.killer-row {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--bdr);
+}
+.killer-row:last-child { border-bottom:none; }
+.killer-rank { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:#e07878; min-width:22px; flex-shrink:0; margin-top:2px; }
+.killer-q { flex:1; font-size:.85rem; color:var(--txt); line-height:1.4; }
+.killer-q small { display:block; font-family:'IBM Plex Mono',monospace; font-size:.58rem; color:var(--txt-dim); margin-top:3px; }
+.killer-votes { font-family:'IBM Plex Mono',monospace; font-size:.65rem; color:#e07878; white-space:nowrap; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -932,6 +1019,17 @@ h1 em { font-style:italic; color:var(--gold); }
     <div class="lb-inline-title">🏆 Топ &mdash; Случайный и Экзамен</div>
     <div id="lb-inline-rows"><div class="lb-inline-empty">Загрузка…</div></div>
   </div>
+
+  <!-- Зал позора -->
+  <div class="shame-section" id="shame-section">
+    <div class="shame-title">💀 Зал позора</div>
+    <div id="shame-rows"><div class="shame-empty">Загрузка…</div></div>
+  </div>
+
+  <!-- Ticket prediction button -->
+  <button class="ticket-btn" onclick="openTicketPrediction()">
+    🎰 Что спросит Виктор Анатольевич?
+  </button>
 
   <!-- Name -->
   <div class="w-section">
@@ -999,6 +1097,12 @@ h1 em { font-style:italic; color:var(--gold); }
     <span class="prog-map-title">Твой прогресс по лекциям</span>
     <div id="prog-rows"></div>
     <button class="lb-link" onclick="resetProgress()">✕ Сбросить прогресс</button>
+  </div>
+
+  <!-- Убийцы группы -->
+  <div class="w-section prog-map" id="killers-section" style="margin-top:24px;">
+    <span class="prog-map-title">📊 Убийцы группы — топ сложных вопросов</span>
+    <div id="killers-rows"><div class="lb-inline-empty">Загрузка…</div></div>
   </div>
 
 </div>
@@ -1903,6 +2007,8 @@ function goBack() {
     app.style.transition = '';
     renderProgressMap();
     loadLeaderboard();
+    loadHallOfShame();
+    loadHardestCards();
     const w = document.getElementById('welcome');
     w.style.display = 'flex';
     w.style.opacity = '0';
@@ -2285,6 +2391,8 @@ function showWelcome() {
       checkResume();
       renderProgressMap();
       loadLeaderboard();
+      loadHallOfShame();
+      loadHardestCards();
       // init count picker for default ordered mode
       const _r = document.getElementById('count-range');
       if (_r) { chosenCount = ALL.length; _r.max = ALL.length; _r.value = ALL.length; onSlider(_r); const _ml = document.getElementById('count-max-label'); if (_ml) _ml.textContent = ALL.length; document.getElementById('count-picker').classList.add('open'); }
@@ -2574,11 +2682,19 @@ function resumeSession() {
 const _origVerdict = verdict;
 window.verdict = function(type) {
   stopTimer();
-  // save card progress (by index in ALL)
   const allIdx = ALL.indexOf(cards[idx]);
-  if (allIdx >= 0) saveCardVerdict(allIdx, type);
+  if (allIdx >= 0) {
+    saveCardVerdict(allIdx, type);
+    // record unknown vote to Supabase for group stats
+    if (type === 'unknown') {
+      fetch(`${SB_URL}/rest/v1/card_unknown_votes`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Prefer':'return=minimal' },
+        body: JSON.stringify({ card_idx: allIdx })
+      }).catch(()=>{});
+    }
+  }
   _origVerdict(type);
-  // save session progress (next tick)
   setTimeout(saveProgress, 50);
 };
 
@@ -2765,6 +2881,85 @@ function closeLb() {
   document.getElementById('lb-overlay').classList.remove('open');
 }
 
+function openTicketPrediction() {
+  const shuffled = [...ALL].sort(() => Math.random() - .5).slice(0, 5);
+  const el = document.getElementById('ticket-questions');
+  el.innerHTML = shuffled.map((c, i) => `
+    <div class="ticket-q">
+      <span class="ticket-num">${i+1}.</span>
+      <div>
+        <div class="ticket-qtext">${c.q.replace(/<em>/g,'').replace(/<\/em>/g,'')}</div>
+        <span class="ticket-lec">${c.lec}</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('ticket-overlay').classList.add('open');
+  if (window.MathJax) setTimeout(()=>MathJax.typesetPromise([el]), 50);
+}
+function closeTicket() {
+  document.getElementById('ticket-overlay').classList.remove('open');
+}
+
+async function loadHallOfShame() {
+  const el = document.getElementById('shame-rows');
+  if (!el) return;
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&score_pct=lt.30&total=gte.15&mode=in.(bonus,random,exam)&order=score_pct.asc,known.asc&limit=5`,
+      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      el.innerHTML = '<div class="shame-empty">Пока все молодцы 👀</div>';
+      return;
+    }
+    const skulls = ['💀','☠️','🪦','😬','😰'];
+    el.innerHTML = rows.map((row, i) => `
+      <div class="shame-row">
+        <span class="shame-rank">${skulls[i]}</span>
+        <span class="shame-name">${row.name || 'Аноним'}</span>
+        <span class="shame-score">${row.known}/${row.total}</span>
+      </div>`).join('');
+  } catch {
+    el.innerHTML = '<div class="shame-empty">Не удалось загрузить</div>';
+  }
+}
+
+async function loadHardestCards() {
+  const el = document.getElementById('killers-rows');
+  if (!el) return;
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/card_unknown_votes?select=card_idx&limit=1000`,
+      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || rows.length === 0) {
+      el.innerHTML = '<div class="lb-inline-empty">Данных пока нет — сыграйте больше!</div>';
+      return;
+    }
+    // count votes per card_idx
+    const counts = {};
+    rows.forEach(r => { counts[r.card_idx] = (counts[r.card_idx]||0) + 1; });
+    const sorted = Object.entries(counts)
+      .sort((a,b) => b[1]-a[1])
+      .slice(0, 5);
+    const fire = ['🔥','💀','😱','😭','🤯'];
+    el.innerHTML = sorted.map(([idx, cnt], i) => {
+      const card = ALL[parseInt(idx)];
+      if (!card) return '';
+      const qText = card.q.replace(/<[^>]+>/g,'').substring(0, 70);
+      return `<div class="killer-row">
+        <span class="killer-rank">${fire[i]}</span>
+        <div class="killer-q">${qText}…<small>${card.lec}</small></div>
+        <span class="killer-votes">${cnt}×</span>
+      </div>`;
+    }).join('');
+    if (window.MathJax) setTimeout(()=>MathJax.typesetPromise([el]), 50);
+  } catch {
+    el.innerHTML = '<div class="lb-inline-empty">Не удалось загрузить</div>';
+  }
+}
+
 // checkResume() вызывается из showWelcome() при переходе с экрана таймера
 
 /* ================================================================
@@ -2877,6 +3072,18 @@ function closeLb() {
     <button class="res-btn rb-primary"    onclick="retryQuiz()">↺ Пройти тест снова</button>
     <button class="res-btn rb-secondary"  onclick="backToStudy()">📖 Вернуться к конспекту</button>
     <button class="res-btn rb-ghost"      onclick="goBack()">↩ Изменить режим</button>
+  </div>
+</div>
+
+<!-- TICKET PREDICTION OVERLAY -->
+<div id="ticket-overlay" onclick="if(event.target===this)closeTicket()">
+  <div class="ticket-panel">
+    <span class="ticket-eyebrow">нейросеть · gpt-матстат-7</span>
+    <div class="ticket-title">🎰 Твой билет на экзамене</div>
+    <span class="ticket-sub">Виктор Анатольевич уже распечатал</span>
+    <div id="ticket-questions"></div>
+    <div class="ticket-disclaimer">* точность прогноза: 50/50. Либо будет, либо нет.</div>
+    <button class="lb-close" onclick="closeTicket()" style="margin-top:16px">✕ Закрыть</button>
   </div>
 </div>
 
