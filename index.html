@@ -16,19 +16,19 @@ MathJax = {
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
 :root {
-  --bg:      #0b0a07;
-  --bg2:     #151310;
-  --gold:    #c8a44a;
-  --gold-lt: #e6c46a;
-  --gold-dim:rgba(200,164,74,.13);
-  --parch:   #f3edd6;
-  --parch-m: #e4ddc1;
-  --ink:     #1c1808;
-  --ink-lt:  #8b6840;
-  --txt:     #d5cfc0;
-  --txt-dim: rgba(213,207,192,.42);
-  --bdr:     rgba(200,164,74,.22);
-  --bdr-hi:  rgba(200,164,74,.5);
+  --bg:      #07080f;
+  --bg2:     #0d0f1e;
+  --gold:    #d4a843;
+  --gold-lt: #ecbf50;
+  --gold-dim:rgba(212,168,67,.12);
+  --parch:   #edf1ff;
+  --parch-m: #d4daf5;
+  --ink:     #09090f;
+  --ink-lt:  #44486a;
+  --txt:     #b8c4e8;
+  --txt-dim: rgba(184,196,232,.4);
+  --bdr:     rgba(212,168,67,.18);
+  --bdr-hi:  rgba(212,168,67,.45);
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 
@@ -46,12 +46,13 @@ body {
   min-height: 100vh;
   position: relative;
 }
-/* Atmospheric amber glow */
+/* Atmospheric glow — gold center + cool edges */
 body::before {
   content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
   background:
-    radial-gradient(ellipse 100% 60% at 60% 30%, rgba(200,164,74,.055) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 50% at 15% 70%, rgba(180,120,40,.03) 0%, transparent 60%);
+    radial-gradient(ellipse 90% 55% at 55% 30%, rgba(212,168,67,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 70% at 5% 85%,  rgba(80,100,220,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 95% 65%, rgba(140,70,200,.04) 0%, transparent 55%);
 }
 /* Grain texture */
 body::after {
@@ -123,8 +124,8 @@ body::after {
 }
 /* ── Center glass card ──────────────── */
 .wc-card {
-  width: 100%; max-width: 560px;
-  background: rgba(12,9,6,.78);
+  width: 100%; max-width: 580px;
+  background: rgba(8,10,22,.82);
   backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(200,164,74,.18);
   border-radius: 16px;
@@ -211,27 +212,35 @@ body::after {
 /* ── Bottom stats row ───────────────── */
 .wc-stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1.6fr 1fr 1.6fr 1fr;
+  grid-template-rows: auto;
   gap: 10px;
-  width: 100%; max-width: 880px;
+  width: 100%; max-width: 960px;
   opacity: 0;
   animation: wc-rise .6s cubic-bezier(.22,1,.36,1) .2s forwards;
 }
-.wc-stat-card {
-  background: rgba(12,9,6,.72);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(200,164,74,.12);
-  border-radius: 10px; padding: 14px 16px;
-  max-height: 180px; overflow-y: auto;
+/* Leaderboard and progress get accent left border */
+.wc-stat-card:nth-child(1),
+.wc-stat-card:nth-child(3) {
+  border-left: 2px solid rgba(212,168,67,.35);
 }
+.wc-stat-card {
+  background: rgba(8,10,22,.72);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212,168,67,.12);
+  border-radius: 10px; padding: 14px 16px;
+  max-height: 200px; overflow-y: auto;
+  transition: border-color .2s;
+}
+.wc-stat-card:hover { border-color: rgba(212,168,67,.28); }
 .wc-stat-card::-webkit-scrollbar { width:3px; }
-.wc-stat-card::-webkit-scrollbar-thumb { background:rgba(200,164,74,.2); border-radius:2px; }
+.wc-stat-card::-webkit-scrollbar-thumb { background:rgba(212,168,67,.2); border-radius:2px; }
 .wc-stat-label {
   font-family: 'IBM Plex Mono', monospace;
   font-size: .52rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--gold); opacity: .55; display: block;
+  color: var(--gold); opacity: .6; display: block;
   margin-bottom: 10px; padding-bottom: 8px;
-  border-bottom: 1px solid rgba(200,164,74,.1);
+  border-bottom: 1px solid rgba(212,168,67,.1);
 }
 /* ── Resume banner ──────────────────── */
 .resume-banner {
@@ -3289,7 +3298,7 @@ async function loadHardestCards() {
 
   // Wireframe layer
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0xc8a44a, wireframe: true, transparent: true, opacity: 0.09
+    color: 0xd4a843, wireframe: true, transparent: true, opacity: 0.11
   });
   const wireMesh = new THREE.Mesh(geo, wireMat);
   scene.add(wireMesh);
