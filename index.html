@@ -2510,9 +2510,24 @@ function startBonusTest() {
    2. реакция угасла → карточка переворачивается (ответ)
    3. появляется кнопка «Далее →»
    4. нажал «Далее →» → следующий вопрос                 */
+function recordUnknownVote(allIdx) {
+  fetch(`${SB_URL}/rest/v1/card_unknown_votes`, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Prefer':'return=minimal' },
+    body: JSON.stringify({ card_idx: allIdx })
+  }).catch(()=>{});
+}
+
 function bonusVerdict(type) {
   if (busy) return;
   answers[idx] = type;
+
+  // трекинг для убийц группы
+  const allIdx = ALL.indexOf(cards[idx]);
+  if (allIdx >= 0) {
+    saveCardVerdict(allIdx, type);
+    if (type === 'unknown') recordUnknownVote(allIdx);
+  }
 
   // обновить счётчики и прогресс-бар
   const nK = answers.filter(a=>a==='known').length;
@@ -2686,13 +2701,7 @@ window.verdict = function(type) {
   if (allIdx >= 0) {
     saveCardVerdict(allIdx, type);
     // record unknown vote to Supabase for group stats
-    if (type === 'unknown') {
-      fetch(`${SB_URL}/rest/v1/card_unknown_votes`, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Prefer':'return=minimal' },
-        body: JSON.stringify({ card_idx: allIdx })
-      }).catch(()=>{});
-    }
+    if (type === 'unknown') recordUnknownVote(allIdx);
   }
   _origVerdict(type);
   setTimeout(saveProgress, 50);
@@ -2780,7 +2789,7 @@ function timerExpire() {
   // auto-mark unknown without auto-advancing
   answers[idx] = 'unknown';
   const allIdx = ALL.indexOf(cards[idx]);
-  if (allIdx >= 0) saveCardVerdict(allIdx, 'unknown');
+  if (allIdx >= 0) { saveCardVerdict(allIdx, 'unknown'); recordUnknownVote(allIdx); }
   // update counters & progress bar
   const nK = answers.filter(a=>a==='known').length;
   const nU = answers.filter(a=>a==='unknown').length;
