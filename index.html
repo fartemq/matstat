@@ -2637,15 +2637,21 @@ function stopTimer() {
 /* ================================================================
    LEADERBOARD — inline top-5 (bonus mode only)
 ================================================================ */
+const LB_TOTAL = 74; // эталонный размер колоды случайного режима
+
+async function fetchLbRows(limit) {
+  const r = await fetch(
+    `${SB_URL}/rest/v1/results?select=name,known&mode=in.(bonus,random)&order=known.desc&limit=${limit}`,
+    { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
+  );
+  return r.json();
+}
+
 async function loadLeaderboard() {
   const el = document.getElementById('lb-inline-rows');
   if (!el) return;
   try {
-    const r = await fetch(
-      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=in.(bonus,random)&order=score_pct.desc,known.desc&limit=5`,
-      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
-    );
-    const rows = await r.json();
+    const rows = await fetchLbRows(5);
     if (!Array.isArray(rows) || rows.length === 0) {
       el.innerHTML = '<div class="lb-inline-empty">Пока нет результатов — сыграй первым!</div>';
       return;
@@ -2655,24 +2661,19 @@ async function loadLeaderboard() {
       <div class="lb-inline-row">
         <span class="lb-inline-rank">${medals[i]}</span>
         <span class="lb-inline-name">${row.name || 'Аноним'}</span>
-        <span class="lb-inline-score">${row.score_pct}%</span>
+        <span class="lb-inline-score">${row.known} из ${LB_TOTAL}</span>
       </div>`).join('');
   } catch {
     el.innerHTML = '<div class="lb-inline-empty">Не удалось загрузить</div>';
   }
 }
 
-/* overlay leaderboard (kept for compat) */
 async function openLeaderboard() {
   document.getElementById('lb-overlay').classList.add('open');
   const el = document.getElementById('lb-rows');
   el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Загрузка…</div>';
   try {
-    const r = await fetch(
-      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=in.(bonus,random)&order=score_pct.desc,known.desc&limit=10`,
-      { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
-    );
-    const rows = await r.json();
+    const rows = await fetchLbRows(10);
     if (!Array.isArray(rows) || rows.length === 0) {
       el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Пока нет результатов</div>';
       return;
@@ -2682,9 +2683,9 @@ async function openLeaderboard() {
       <div class="lb-row">
         <span class="lb-rank">${medals[i] || (i+1)+'.'}</span>
         <div class="lb-name">${row.name || 'Аноним'}
-          <small>Случайный · ${row.known}/${row.total} карточек</small>
+          <small>Случайный режим</small>
         </div>
-        <span class="lb-score">${row.score_pct}%</span>
+        <span class="lb-score">${row.known} из ${LB_TOTAL}</span>
       </div>`).join('');
   } catch {
     el.innerHTML = '<div style="color:#e07878;font-size:.85rem;padding:8px 0">Не удалось загрузить</div>';
