@@ -963,11 +963,6 @@ h1 em { font-style:italic; color:var(--gold); }
   <div class="w-title">Математическая <em>Статистика</em></div>
   <div class="w-rule"></div>
 
-  <!-- Card of the day -->
-  <div style="width:100%;max-width:440px;margin-bottom:24px;padding:14px 18px;background:var(--gold-dim);border:1px solid var(--bdr);border-radius:6px;" id="card-of-day">
-    <span style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.7;display:block;margin-bottom:6px;">📌 Карточка дня</span>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--txt);line-height:1.5;" id="cod-text"></div>
-  </div>
 
   <!-- Who is online -->
   <div id="online-wrap" style="width:100%;max-width:440px;margin-bottom:16px;min-height:20px;display:none;">
@@ -2363,7 +2358,7 @@ function showWelcome() {
       w.style.opacity    = '1';
       checkResume();
       renderProgressMap();
-      renderCardOfDay();
+
       loadLeaderboard();
       loadHallOfShame();
       loadHardestCards();
@@ -2729,14 +2724,6 @@ function renderProgressMap() {
   }).join('');
 }
 
-function renderCardOfDay() {
-  const el = document.getElementById('cod-text');
-  if (!el) return;
-  const dayIdx = Math.floor(Date.now() / 86400000) % ALL.length;
-  const card = ALL[dayIdx];
-  el.innerHTML = card.q.replace(/<em>/g,'<em style="color:var(--gold)">');
-  if (window.MathJax) setTimeout(()=>MathJax.typesetPromise([el]),50);
-}
 
 function updateWeakHint() {
   const v = loadVerdicts();
