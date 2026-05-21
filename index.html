@@ -2642,7 +2642,7 @@ async function loadLeaderboard() {
   if (!el) return;
   try {
     const r = await fetch(
-      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=eq.bonus&order=score_pct.desc,known.desc&limit=5`,
+      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=in.(bonus,random)&order=score_pct.desc,known.desc&limit=5`,
       { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
     );
     const rows = await r.json();
@@ -2669,7 +2669,7 @@ async function openLeaderboard() {
   el.innerHTML = '<div style="color:var(--txt-dim);font-size:.85rem;padding:8px 0">Загрузка…</div>';
   try {
     const r = await fetch(
-      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=eq.bonus&order=score_pct.desc,known.desc&limit=10`,
+      `${SB_URL}/rest/v1/results?select=name,score_pct,known,total&mode=in.(bonus,random)&order=score_pct.desc,known.desc&limit=10`,
       { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } }
     );
     const rows = await r.json();
